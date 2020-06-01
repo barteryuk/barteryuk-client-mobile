@@ -1,23 +1,31 @@
-import React from 'react'
-// import { useQuery } from '@apollo/react-hooks';
+import React, { useEffect, useState } from 'react'
 
 import Carousel from './Carousel'
 import TagCategory from './TagCategory'
 
-import { Layout, Spinner } from '@ui-kitten/components';
+import { Layout, Spinner, Text } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native'
 
 function BNOB(props) {
-  const { navigation, products } = props
-  // const { loading, error, data } = useQuery(FETCH_MOVIES)
-  //   if (error) return <Layout style={styles.containerSpinner}><Text>Error ...</Text></Layout>
-    const handleFromChild = (data) => {
-      props.cb(data)
-    }
+  const { navigation, products, userId } = props
+  const [ BNOBProd, setBNOBProd ] = useState(null)
+  const handleFromChild = (data) => {
+    props.cb(data)
+  }
+  
+  useEffect(() => {
+    let BNOBProd = []
+    products.forEach(el => {
+      if (el.category === 'BNOB' && el.userId !== userId ) {
+        BNOBProd.push(el)
+      } 
+    })
+    setBNOBProd(BNOBProd)
+  }, [])
     return (
       <>
         <TagCategory category={"Brand New Open Box"}/>
-        <Carousel data={products} navigation={navigation} cb={handleFromChild}/>      
+        { BNOBProd ? <Carousel data={BNOBProd} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }     
       </>
     )
 }

@@ -3,6 +3,9 @@ import { View, StyleSheet, ImageBackground, Image, Animated, Dimensions, AsyncSt
 
 import axios from 'axios'
 
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from "apollo-boost"
+
 import { Layout, Spinner } from '@ui-kitten/components';
 import { Button, Text } from '@ui-kitten/components';
 import Constants from 'expo-constants'
@@ -21,13 +24,31 @@ const { height, width } = Dimensions.get('window')
 //   useFocusEffect
 // } from '@react-navigation/native';
 
+const FETCH_PRODUCTS = gql`
+  query {
+    products {
+      _id
+      title
+      description
+      bidProductId {
+        _id
+      }
+      value
+      userId
+      photo
+      category
+    }
+  }
+`
+
 function AllProducts(props) {
   // const { userId } = props.route.params
-  const [BNIBProd, setBNIBProd] = useState([])
-  const [BNOBProd, setBNOBProd] = useState([])
-  const [UsedProd, setUsedProd] = useState([])
+  const { navigation } = props
   const [productDetail, setProductDetail] = useState(null)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
+  const [userId, setUserId] = useState('')
+
+  const {loading, error, data} = useQuery(FETCH_PRODUCTS)
   // const [visible, setVisible] = useState(false)
   // const [payload, setPayload] = useState('')
 
@@ -52,27 +73,7 @@ function AllProducts(props) {
       value = JSON.parse(value)
       let userId = value.userId
       console.log('userrr', userId)
-      setLoading(true)
-      axios.get('http://192.168.43.163:3000/products')
-      .then(({ data }) => {
-        // console.log(data)
-        let BNIBProd = []
-        let BNOBProd = []
-        let UsedProd = []
-        data.forEach(el => {
-          if (el.category === 'BNIB' && el.status === 'Open' && el.userId !== userId) {
-            BNIBProd.push(el)
-          } else if (el.category === 'BNOB' && el.status === 'Open' && el.userId !== userId) {
-            BNOBProd.push(el)
-          } else if (el.category === 'Used' && el.status === 'Open' && el.userId !== userId) {
-            UsedProd.push(el)
-          }
-        })
-        setBNIBProd(BNIBProd)
-        setBNOBProd(BNOBProd)
-        setUsedProd(UsedProd)
-        setLoading(false)
-      })
+      setUserId(userId)
     } catch (e) {
       console.log(e)
     }
@@ -82,17 +83,9 @@ function AllProducts(props) {
     fetchHooks()
   }, [])
 
-  // const [botPanel, setBotPanel] = useState(20)
   const handleFromChild = (data) => {
     setProductDetail(data)
-    // setBotPanel(height - 60)
   }
-  // const [pullGone, setPullGone] = useState(false)
-  // const handleFromBidBtn = (data) => {
-  //   if (data === 'closePanel') {
-  //     setBotPanel(20)
-  //   }
-  // }
   const draggedValue = new Animated.Value(120)
   return (
       <>
@@ -105,9 +98,9 @@ function AllProducts(props) {
             <ScrollView>
               { loading ? <Layout style={styles.containerSpinner}><Spinner/></Layout> : 
               <>
-              <BNIBProducts navigation={props.navigation} products={BNIBProd} cb={handleFromChild}/>
-              <BNOBProducts navigation={props.navigation} products={BNOBProd} cb={handleFromChild}/>
-              <UsedProducts navigation={props.navigation} products={UsedProd} cb={handleFromChild}/>
+              <BNIBProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>
+              <BNOBProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>
+              <UsedProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>
               </>}
             </ScrollView>
           </View>

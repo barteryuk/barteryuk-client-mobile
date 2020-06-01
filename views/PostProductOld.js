@@ -10,7 +10,6 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
 import axios from 'axios'
-import FormData from 'form-data'
 
 const ADD_PRODUCT = gql`
   mutation AddProduct(
@@ -42,10 +41,16 @@ const ADD_PRODUCT = gql`
 `
 
 function PostProduct(props) {
+    // const [fileObj, setFileObj] = React.useState({
+    //   uri: "https://clipartart.com/images/image-placeholder-clipart-1.png",
+    //   name: "userProfile.jpg",
+    //   type: "image/jpg",
+    // });
 
     const [fileObj, setFileObj] = React.useState("https://clipartart.com/images/image-placeholder-clipart-1.png");
 
     function pickImage() {
+    //save file uri
     ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
@@ -53,36 +58,11 @@ function PostProduct(props) {
     })
       .then((result) => {
         console.log('result', result);
-        
-        let localUri = result.uri;
-        let filename = localUri.split('/').pop();
-      
-        // Infer the type of the image
-        let match = /\.(\w+)$/.exec(filename);
-        let type = match ? `image/${match[1]}` : `image`;
-        let photo = { uri: localUri, name: filename, type }
-        // Upload the image using the fetch and FormData APIs
-        let formData = new FormData();
-        // Assume "photo" is the name of the form field the server expects
-        formData.append('file', { uri: localUri, name: filename, type });
-        formData.append('upload_preset', 'dporllohn')
-        formData.append("cloud_name", "dporllohn")
-        console.log('FORM DATA')
-        console.log(formData)
-        return axios({
-          method: 'POST',
-          url: "https://api.cloudinary.com/v1_1/dporllohn/image/upload",
-          data: formData
-        })
+        setFileObj(result.uri);
+        // setFileObj({ ...fileObj, uri: result.uri })
+        console.log('fileee', fileObj)
       })
-      .then(result => {
-        console.log('RESSSSUUULT')
-        console.log(result.data.secure_url)
-        setFileObj(result.data.secure_url);
-      })
-      .catch((e) => {
-        console.log('ERRROOOOR')
-        console.log(e)
+      .catch((_) => {
         setFileObj(fileObj);
       });
     }
@@ -94,7 +74,76 @@ function PostProduct(props) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [AddProduct] = useMutation(ADD_PRODUCT)
 
+  // const [selectedImage, setSelectedImage] = React.useState(null);
+  // let pickImage = async () => {
+  //   let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
 
+  //   if (permissionResult.granted === false) {
+  //     alert('Permission to access camera roll is required!');
+  //     return;
+  //   }
+
+  //   let pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+  //   if (pickerResult.cancelled === true) {
+  //     return;
+  //   }
+
+  //   console.log('picker', pickerResult)
+  //   setSelectedImage({ uri: pickerResult.uri });
+  // };
+  // console.log('selImg', selectedImage)
+  // if (selectedImage !== null) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Image
+  //         source={{ uri: selectedImage.uri }}
+  //         style={styles.thumbnail}
+  //       />
+  //     </View>
+  //   );
+  // }
+
+  // const takeSnapshot = async() => {
+  //   let result = await ImagePicker.launchCameraAsync({
+  //     base64: true
+  //   })
+
+  //   if(!result.cancelled){
+
+  //       let base64Img = `data:image/jpg;base64,${result.base64}`
+
+  //       let apiUrl = 'https://api.cloudinary.com/v1_1/straysafe/image/upload';
+  //       let data = {
+  //           "file": base64Img,
+  //           "upload_preset": "bareeeg8"
+  //       }
+
+  //       fetch(apiUrl, {
+  //           body: JSON.stringify(data),
+  //           headers: {
+  //           'content-type': 'application/json'
+  //           },
+  //           method: 'POST',
+  //       }).then(async r => {
+  //           let data = await r.json()
+  //           console.log(data.secure_url)
+  //           setImageUrl(data.secure_url)
+  //           Alert.alert(
+  //               "Upload Information",
+  //               "Snapshot has been added successfully!",
+  //               [
+  //                 {
+  //                   text: "Ok",
+  //                   onPress: () => console.log("Confirm Info"),
+  //                   style: "cancel"
+  //                 }
+  //               ]
+  //             );
+  //           return data.secure_url
+  //       }).catch(err=>console.log(err))
+  //   }
+  // }
   const [token, setToken] = useState('')
   const fetchStorage = async() => {
     let value = await AsyncStorage.getItem('userLogin')
@@ -114,14 +163,24 @@ function PostProduct(props) {
     } else {
       category = 'Used'
     }
-    console.log('fileeee obj')
-    console.log(fileObj)
+    let photo = fileObj.substring(5)
+    console.log('photooooo', photo)
     AddProduct({ variables: {title, description, value: parseFloat(value), photopath: fileObj, category}})
-    setTitle('')
-    setDescription('')
-    setValue('')
-    setSelectedIndex(0)
-    setFileObj("https://clipartart.com/images/image-placeholder-clipart-1.png")
+    // axios({
+    //   method: 'POST',
+    //   url: `http://192.168.43.163:4003/products/add`,
+    //   data: {
+    //     title, description, value: parseFloat(value), photopath: fileObj, category
+    //   },
+    //   headers: {
+    //     access_token: token
+    //   }
+    // })
+    // .then(({ data }) => {
+    //   console.log('done')
+    //   console.log(data)
+    // })
+    // console.log('payload', payload)
   }
   return (
     <View style={styles.container}>

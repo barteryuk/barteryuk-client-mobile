@@ -3,26 +3,69 @@ import { Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-nati
 import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 import { Card, Button, ButtonGroup } from '@ui-kitten/components';
 import axios from 'axios';
+import { gql } from 'apollo-boost'
+import { useMutation } from '@apollo/react-hooks'
 const { width: screenWidth, height } = Dimensions.get('window')
 
-export default function Slider(props) {
-  const { data, wantedProduct ,navigation, status } = props
 
-  const chooseToBid = () => {
-    axios({
-      method: 'PUT',
-      url: (`http://192.168.43.163:3000/products/${wantedP}`)
-    })
+const BID_ITEM = gql`
+    mutation BidItem(
+      $itemId: ID!
+      $collateralId: ID!
+      ) {
+      bidItem(
+        itemId: $itemId
+        collateralId: $collateralId
+      ) {
+          message
+          result {
+            _id
+            title
+            description
+            bidProductId {
+              _id
+            }
+            value
+            userId
+            photo
+            category
+          }
+      }
+    }
+`
+
+const SEND_MAIL = gql`
+  mutation SendMail($email: String!){
+    sendMail(email: $email){
+      status
+      message
+    } 
   }
+`
+
+export default function Slider(props) {
+  const { data, wantedProduct, navigation, status } = props
+  const [BidItem] = useMutation(BID_ITEM)
+  const [SendMail] = useMutation(SEND_MAIL)
+
+  const chooseToBid = (own) => {
+    console.log('wanted', wantedProduct._id)
+    console.log('own', own._id)
+    console.log('dataaaa', own)
+    BidItem({ variables: { itemId: wantedProduct._id, collateralId: own._id }})
+    // SendMail({ variables: { email: wantedProduct.email }})
+    console.log('successfully bid')
+  }
+
   const renderItem = ({ item, index }, parallaxProps) => {
     return (
         <TouchableOpacity
             // onPress={ () => navigation.navigate('detail' , { item, status }) }
-            onPress={ () => chooseToBid() }
+            onPress={ () => chooseToBid(item) }
         >
             <View style={styles.item}>
                 <ParallaxImage
-                    source={{ uri: item.image }}
+                    source={{ uri: item.photo }}
                     containerStyle={styles.imageContainer}
                     style={styles.image}
                     parallaxFactor={0.1}

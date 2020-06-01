@@ -44,8 +44,9 @@ const Login = (props) => {
   // })
   const storeUserData = async (storage) => {
     try {
-      await AsyncStorage.setItem('userLogin', JSON.stringify(storage))
-      console.log('tokeeen set', storage)
+      const coba = await AsyncStorage.setItem('userLogin', JSON.stringify(storage))
+      const token = await AsyncStorage.setItem('token', storage.token)
+      return token
     } catch (error) {
       console.log(error)
     }

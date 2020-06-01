@@ -14,7 +14,7 @@ export default function Slider(props) {
         >
             <View style={styles.item}>
                 <ParallaxImage
-                    source={{ uri: item.image }}
+                    source={{ uri: item.photo }}
                     containerStyle={styles.imageContainer}
                     style={styles.image}
                     parallaxFactor={0.1}

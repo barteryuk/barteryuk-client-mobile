@@ -10,9 +10,9 @@ import { Button, Text } from '@ui-kitten/components';
 import Constants from 'expo-constants'
 import { ScrollView } from 'react-native-gesture-handler';
 import { FontAwesome5 } from '@expo/vector-icons';
-import BNIBProducts from '../components/ProductsByCategory/BNIB'
-import BNOBProducts from '../components/ProductsByCategory/BNOB'
-import UsedProducts from '../components/ProductsByCategory/Used'
+import BNIBProducts from '../components/HomeComponents/BNIB'
+import BNOBProducts from '../components/HomeComponents/BNOB'
+import UsedProducts from '../components/HomeComponents/Used'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 import Sliding from '../components/Sliding'
 const { height, width } = Dimensions.get('window')
@@ -53,13 +53,10 @@ const FETCH_PRODUCTS = gql`
 
 function Home(props) {
   const { navigation } = props
-  const [BNIBProd, setBNIBProd] = useState([])
-  const [BNOBProd, setBNOBProd] = useState([])
-  const [UsedProd, setUsedProd] = useState([])
   const [productDetail, setProductDetail] = useState(null)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
 
-  // const {loading, error, data} = useQuery(FETCH_PRODUCTS)
+  const {loading, error, data} = useQuery(FETCH_PRODUCTS)
 
   // const [visible, setVisible] = useState(false)
   // const [payload, setPayload] = useState('')
@@ -89,27 +86,26 @@ function Home(props) {
         navigation.navigate('root')
       } else {
         console.log('masuuuuk')
-        setLoading(true)
-        axios.get('http://192.168.43.163:3000/products')
-        .then(({ data }) => {
-          // console.log(data)
-          let BNIBProd = []
-          let BNOBProd = []
-          let UsedProd = []
-          data.forEach(el => {
-            if (el.category === 'BNIB' ) {
-              BNIBProd.push(el)
-            } else if (el.category === 'BNOB') {
-              BNOBProd.push(el)
-            } else {
-              UsedProd.push(el)
-            }
-          })
-          setBNIBProd(BNIBProd)
-          setBNOBProd(BNOBProd)
-          setUsedProd(UsedProd)
-          setLoading(false)
-        })
+        // axios.get('http://192.168.0.104:3000/products')
+        // .then(({ data }) => {
+        //   // console.log(data)
+        //   let BNIBProd = []
+        //   let BNOBProd = []
+        //   let UsedProd = []
+        //   data.forEach(el => {
+        //     if (el.category === 'BNIB' ) {
+        //       BNIBProd.push(el)
+        //     } else if (el.category === 'BNOB') {
+        //       BNOBProd.push(el)
+        //     } else {
+        //       UsedProd.push(el)
+        //     }
+        //   })
+        //   setBNIBProd(BNIBProd)
+        //   setBNOBProd(BNOBProd)
+        //   setUsedProd(UsedProd)
+        //   setLoading(false)
+        // })
       }
     } catch (error) {
       console.log(error)
@@ -123,11 +119,29 @@ function Home(props) {
   const handleFromChild = (data) => {
     setProductDetail(data)
   }
+
+  const filter = (data) => {
+    let BNIBProd = []
+    let BNOBProd = []
+    let UsedProd = []
+    data.forEach(el => {
+      if (el.category === 'BNIB' ) {
+        BNIBProd.push(el)
+      } else if (el.category === 'BNOB') {
+        BNOBProd.push(el)
+      } else {
+        UsedProd.push(el)
+      }
+    })
+    setBNIBProd(BNIBProd)
+    setBNOBProd(BNOBProd)
+    setUsedProd(UsedProd)
+  }
   const draggedValue = new Animated.Value(120)
   if (loading) {
     return <Layout style={styles.containerSpinner}><Spinner/></Layout>
   } else {
-    // console.log('data produuuuuk', data)
+    console.log('data produuuuuk', data.products)
     return (
       <>
       <View style={styles.container}>
@@ -138,9 +152,9 @@ function Home(props) {
         <View style={styles.containertwo}>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 40, paddingBottom: 100}}>
             <ScrollView>
-              <BNIBProducts navigation={props.navigation} products={BNIBProd} cb={handleFromChild}/>
-              <BNOBProducts navigation={props.navigation} products={BNOBProd} cb={handleFromChild}/>
-              <UsedProducts navigation={props.navigation} products={UsedProd} cb={handleFromChild}/>
+              <BNIBProducts navigation={props.navigation} products={data.products} cb={handleFromChild}/>
+              <BNOBProducts navigation={props.navigation} products={data.products} cb={handleFromChild}/>
+              <UsedProducts navigation={props.navigation} products={data.products} cb={handleFromChild}/>
             </ScrollView>
           </View>
         </View> 

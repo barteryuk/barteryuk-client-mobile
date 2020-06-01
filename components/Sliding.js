@@ -7,26 +7,46 @@ import Carousel from './CarouselSlide'
 import axios from 'axios'
 
 import { Entypo } from '@expo/vector-icons';
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from "apollo-boost"
 
+const FETCH_OWNITEMS = gql`
+  query {
+    ownItems {
+      _id
+      title
+      description
+      bidProductId {
+        _id
+      }
+      value
+      userId
+      photo
+      category
+    }
+  }
+`
 export default function Sliding(props) {
   const { status, data, navigation } = props
-  const [myPayload, setMyPayload] = useState([])
+  // const [myPayload, setMyPayload] = useState([])
   const [CarouselVisible, setCarouselVisible] = useState(false)
+  const {loading, error, data: myPayload} = useQuery(FETCH_OWNITEMS)
 
   const handleBid = async() => {
     try {
       let value = await AsyncStorage.getItem('userLogin')
       value = JSON.parse(value)
       if (value) {
-        let userId = value.userId
-        console.log('userrr', userId)
-        axios.get('http://192.168.43.163:3000/products')
-        .then(({ data }) => {
-          let filtered = data.filter(el => el.userId === userId)
-          console.log('filtered product', filtered)
-          setMyPayload(filtered)
+        console.log('already auth, proceed')
+        // let userId = value.userId
+        // console.log('userrr', userId)
+        // axios.get('http://192.168.43.163:3000/products')
+        // .then(({ data }) => {
+        //   let filtered = data.filter(el => el.userId === userId)
+        //   console.log('filtered product', filtered)
+        //   setMyPayload(filtered)
           setCarouselVisible(true)
-        })
+        // })
       } else {
         navigation.navigate('auth')
       }
@@ -100,7 +120,7 @@ export default function Sliding(props) {
         <Divider/>
         <Button style={{marginTop: 20, borderRadius: 50}} onPress={handleBid}>Bid</Button>
         {/* <Button style={{marginTop: 20, borderRadius: 50}} onPress={closePanel}>Cancel</Button> */}
-        {CarouselVisible ?  myPayload.length !== 0 ? <Carousel data={myPayload} wantedProduct={data.userId} navigation={navigation}/> : <Text style={{textAlign: 'center', fontSize: '20', fontWeight: 'bold'}}>You can't bid, please post at least 1 product</Text>  : <></>}
+        {CarouselVisible ?  myPayload.ownItems.length !== 0 ? <Carousel data={myPayload.ownItems} wantedProduct={data} navigation={navigation}/> : <Text style={{textAlign: 'center', fontSize: '20', fontWeight: 'bold'}}>You can't bid, please post at least 1 product</Text>  : <></>}
       </View>
     </View></>}
 
