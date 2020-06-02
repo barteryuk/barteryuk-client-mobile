@@ -1,7 +1,7 @@
-import React from 'react'
-import { Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react'
+import { Text, View, Dimensions, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
-import { Card, Button, ButtonGroup } from '@ui-kitten/components';
+import { Card, Button, ButtonGroup, Modal, Layout } from '@ui-kitten/components';
 import axios from 'axios';
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
@@ -37,20 +37,27 @@ const BID_ITEM = gql`
 
 export default function Slider(props) {
   const { data, navigation, status } = props
+  const [visible, setVisible] = useState(false)
+  const [empty, setEmpty] = useState(true)
+  const [payload, setPayload] = useState(null)
 
   const backToParent = (item) => {
+    console.log('leeeenght', item.bidProductId.length)
     if (item.bidProductId.length === 0) {
-      props.cb('empty')
+      setVisible(true)
+      setEmpty(true)
     } else {
-      props.cb('exists')
+      setPayload(item)
+      setVisible(true)
+      setEmpty(false)
     }
   }
   const renderItem = ({ item, index }, parallaxProps) => {
     return (
-        <TouchableOpacity
-            // onPress={ () => navigation.navigate('detail' , { item, status }) }
-        >
-            <View style={styles.item}>
+        // <TouchableOpacity
+        //     // onPress={ () => navigation.navigate('detail' , { item, status }) }
+        // >
+            <Layout style={styles.item}>
                 <ParallaxImage
                     source={{ uri: item.photo }}
                     containerStyle={styles.imageContainer}
@@ -77,26 +84,54 @@ export default function Slider(props) {
                   </View> */}
                   {/* <Text>rating: { item.rating }</Text> */}
                 </Card>
-            </View>
-        </TouchableOpacity>
+            </Layout>
+        // </TouchableOpacity>
     )
   } 
   return (
   <>
-    <Carousel
-        style={{ flex: 1, justifyContent: "center", alignItems: 'center', padding: 0, backgroundColor: 'black' }}
-        sliderWidth={screenWidth - 40}
-        sliderHeight={20}
-        itemWidth={screenWidth - 70}
-        data={data}
-        renderItem={renderItem}
-        hasParallaxImages={true}
-    />
+    <Layout>
+      <Carousel
+          style={{ flex: 1, justifyContent: "center", alignItems: 'center', padding: 0, backgroundColor: 'black' }}
+          sliderWidth={screenWidth - 40}
+          sliderHeight={20}
+          itemWidth={screenWidth - 70}
+          data={data}
+          renderItem={renderItem}
+          hasParallaxImages={true}
+      />
+      <Modal visible={visible}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setVisible(false)}>
+            <Card disabled={true}>
+              {empty ? <Text>Zero Bidder</Text> :  
+              payload.bidProductId.map((el, index) => (
+                <Card
+                key={index}
+                style={styles.item}
+                status='basic'
+                > 
+                  <Image source={el.photo} style={styles.image}></Image>
+                  <Text>
+                    {el.title}
+                  </Text>
+                  <Text>
+                    {el.description}
+                  </Text>
+                </Card>
+              ))}
+              </Card>
+      </Modal>
+    </Layout>
+
   </>
   )
 }
 
 const styles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   title: {
     textAlign: 'center',
     color: 'black'

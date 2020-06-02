@@ -9,7 +9,7 @@ import { Hoshi } from 'react-native-textinput-effects';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { FontAwesome5 } from '@expo/vector-icons';
 import { gql } from 'apollo-boost'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import axios from 'axios'
 import FormData from 'form-data'
 
@@ -41,11 +41,27 @@ const ADD_PRODUCT = gql`
     }
   } 
 `
-
+const FETCH_PRODUCTS = gql`
+  query {
+    products {
+      _id
+      title
+      description
+      bidProductId {
+        _id
+      }
+      value
+      userId
+      photo
+      category
+    }
+  }
+`
 function PostProduct(props) {
 
     const [fileObj, setFileObj] = React.useState("https://clipartart.com/images/image-placeholder-clipart-1.png");
     const [loadingPhoto, setLoadingPhoto] = useState(false)
+    const { loading, error, data } = useQuery(FETCH_PRODUCTS);
 
     function pickImage() {
     ImagePicker.launchImageLibraryAsync({
@@ -54,7 +70,6 @@ function PostProduct(props) {
       allowsMultipleSelection: false,
     })
       .then((result) => {
-        console.log('result', result);
         
         let localUri = result.uri;
         let filename = localUri.split('/').pop();
@@ -81,7 +96,6 @@ function PostProduct(props) {
       .then(result => {
         console.log('RESSSSUUULT')
         setLoadingPhoto(false)
-        console.log(result.data.secure_url)
         setFileObj(result.data.secure_url);
       })
       .catch((e) => {
@@ -102,10 +116,10 @@ function PostProduct(props) {
 
   const [token, setToken] = useState('')
   const fetchStorage = async() => {
-    let value = await AsyncStorage.getItem('userLogin')
-    value = JSON.parse(value)
-    console.log('value storage form user profile', value)
-    setToken(value.token)
+    // let value = await AsyncStorage.getItem('userLogin')
+    // value = JSON.parse(value)
+    // console.log('value storage form postProduct', value)
+    // setToken(value.token)
   }
   useEffect(() => {
     fetchStorage()
@@ -119,8 +133,6 @@ function PostProduct(props) {
     } else {
       category = 'Used'
     }
-    console.log('fileeee obj')
-    console.log(fileObj)
     AddProduct({ variables: {title, description, value: parseFloat(value), photopath: fileObj, category}})
     setTitle('')
     setDescription('')
@@ -141,7 +153,7 @@ function PostProduct(props) {
                 value={title}
                 label={'Title'}
                 inputPadding={14}
-                inputStyle={{ color: 'white', width: 400}}
+                inputStyle={{ color: 'black', width: 400}}
                 style={styles.input}
             />
             <Hoshi
@@ -149,7 +161,7 @@ function PostProduct(props) {
                 value={description}
                 label={'Description'}
                 inputPadding={14}
-                inputStyle={{ color: 'white', width: 400, height: 200}}
+                inputStyle={{ color: 'black', width: 400, height: 200}}
                 style={styles.input}
             />
             <Hoshi
@@ -157,7 +169,7 @@ function PostProduct(props) {
                 value={value}
                 label={'Value'}
                 inputPadding={14}
-                inputStyle={{ color: 'white', width: 400 }}
+                inputStyle={{ color: 'black', width: 400 }}
                 style={styles.input}
             />
             <Text category='h5' style={{color: 'black', marginTop: 20 }}>
@@ -277,7 +289,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '90%',
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     borderRadius: 10,
     borderWidth: 1,
     marginVertical: 10

@@ -25,6 +25,13 @@ const FETCH_OWNITEMS = gql`
       description
       bidProductId {
         _id
+        title
+        description
+        value
+        userId
+        photo
+        category
+        tags
       }
       value
       userId
@@ -38,23 +45,27 @@ function MyProduct(props) {
   const { navigation } = props
   // const [myProducts, setMyProducts] = useState([])
   const [myBidder, setMyBidder] = useState(null)
-  const {loading, error, data: myProducts} = useQuery(FETCH_OWNITEMS)
-  const [visible, setVisible] = useState(false);
-  const [isBidder, setIsBidder] = useState(false)
-
-  const handleFromChild = (data) => {
-    if (data === 'empty') {
-      setIsBidder(false)
-    } else {
-      setIsBidder(true)
-    }
-    setVisible(true)
-  }
+  const {loading, error, data: myProducts, refetch} = useQuery(FETCH_OWNITEMS)
+  // const [visible, setVisible] = useState(false);
+  // const [isBidder, setIsBidder] = useState(false)
+  
+  useEffect(() => {
+    refetch()
+  }, [])
+  // const handleFromChild = (data) => {
+  //   if (data === 'empty') {
+  //     setIsBidder(false)
+  //   } else {
+  //     setIsBidder(true)
+  //   }
+  //   setVisible(true)
+  // }
   const draggedValue = new Animated.Value(120)
   if (loading) {
     return <Layout style={styles.containerSpinner}><Spinner/></Layout> 
   } else {
     console.log('MY PRODUUUUUCT', myProducts.ownItems)
+    myProducts.ownItems.forEach(el => console.log(el.bidProductId.length))
     return (
       <>
       <Layout style={styles.container}>
@@ -63,7 +74,7 @@ function MyProduct(props) {
         </View>
         <View style={styles.containertwo}>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 20}}>
-            { myProducts.ownItems ? <CarouselCollection data={myProducts.ownItems} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }
+            { myProducts.ownItems ? <CarouselCollection data={myProducts.ownItems} navigation={navigation}/> : <Text>Empty</Text> }
             {/* <ScrollView>
               <BNIBProducts navigation={props.navigation} products={BNIBProd}/>
               <BNOBProducts navigation={props.navigation} products={BNOBProd}/>
@@ -71,16 +82,6 @@ function MyProduct(props) {
             </ScrollView> */}
           </View>
         </View> 
-        <Modal visible={visible}
-        backdropStyle={styles.backdrop}
-        onBackdropPress={() => setVisible(false)}>
-          <Card disabled={true}>
-          {isBidder ? 
-            myProducts.ownItems.bidProductId.map((el, index) => (
-              <CardMyBidders key={index} productId={el._id}/>
-            )) : <Text>Zero Bidder</Text> }
-            </Card>
-        </Modal>
         {/* <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 130, bottom: 100 }} animatedValue={draggedValue}>
           <View style={styles.panel}>
               { myBidder !== null ? 
@@ -97,6 +98,19 @@ function MyProduct(props) {
 }
 
 const styles = StyleSheet.create({
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain'
+  },
+  item: {
+    marginVertical: 5,
+    marginHorizontal: 5,
+    shadowOffset: {width:10, height:10}, 
+    shadowColor: 'rgba(138,149,158,0.2)',
+    shadowOpacity: 1,  
+    elevation: 10, 
+  },
   backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
@@ -112,7 +126,7 @@ const styles = StyleSheet.create({
   },
   containertwo: {
     flex: 9,
-    backgroundColor: '#dcdece',
+    backgroundColor: 'whitesmoke',
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35
   },

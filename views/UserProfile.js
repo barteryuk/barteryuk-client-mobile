@@ -30,18 +30,13 @@ const FETCH_USER = gql`
   }
 `;
 function Index(props) {
-  console.log("aaa");
-  console.log("prooop", props);
   const { navigation } = props;
   const [email, setEmail] = useState("");
-  console.log("email", email);
   const { loading, client, data } = useQuery(FETCH_USER, {
     variables: { email: email },
   });
-  console.log("=======================================", data);
   const fetchStorage = async () => {
     let value = await AsyncStorage.getItem("userLogin");
-    console.log("ini dari userProfile", value);
     value = JSON.parse(value);
     console.log("value storage form user profile", value);
     setEmail(value.email);
@@ -49,15 +44,15 @@ function Index(props) {
   useEffect(() => {
     fetchStorage();
   }, []);
-  const logout = () => {
-    AsyncStorage.removeItem("userLogin");
-    client.resetStore()
-    navigation.navigate("auth");
+  const logout = async() => {
+    await AsyncStorage.removeItem("userLogin");
+    await AsyncStorage.removeItem("token")
+    // client.resetStore()
+    navigation.navigate("home");
   };
   if (loading) {
     return <Text>Loading</Text>;
   } else {
-    console.log("dataaa", data);
     return (
       <View
         style={{

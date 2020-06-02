@@ -32,6 +32,13 @@ const FETCH_PRODUCTS = gql`
       description
       bidProductId {
         _id
+        title
+        description
+        value
+        userId
+        photo
+        category
+        tags
       }
       value
       userId
@@ -140,7 +147,7 @@ const styles = StyleSheet.create({
   },
   containertwo: {
     flex: 9,
-    backgroundColor: '#dcdece',
+    backgroundColor: 'whitesmoke',
     // backgroundColor: '#dcdece',
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35
@@ -166,7 +173,7 @@ const styles = StyleSheet.create({
     height: 380, 
     justifyContent: 'center', 
     alignItems: 'center',
-    backgroundColor: '#dcdece'
+    backgroundColor: 'whitesmoke'
   }
   
 })

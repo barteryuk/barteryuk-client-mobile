@@ -14,7 +14,7 @@ import BNIBProducts from '../components/HomeComponents/BNIB'
 import BNOBProducts from '../components/HomeComponents/BNOB'
 import UsedProducts from '../components/HomeComponents/Used'
 import SlidingUpPanel from 'rn-sliding-up-panel'
-import Sliding from '../components/Sliding'
+import Sliding from '../components/HomeSlider'
 const { height, width } = Dimensions.get('window')
 
 const FETCH_PRODUCTS = gql`
@@ -85,7 +85,7 @@ function Home(props) {
       if (value) {
         navigation.navigate('root')
       } else {
-        console.log('masuuuuk')
+        console.log('masuuuuk home, token should be null')
         // axios.get('http://192.168.0.104:3000/products')
         // .then(({ data }) => {
         //   // console.log(data)
@@ -141,7 +141,6 @@ function Home(props) {
   if (loading) {
     return <Layout style={styles.containerSpinner}><Spinner/></Layout>
   } else {
-    console.log('data produuuuuk', data.products)
     return (
       <>
       <View style={styles.container}>
