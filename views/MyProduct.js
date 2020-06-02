@@ -52,34 +52,22 @@ function MyProduct(props) {
   useEffect(() => {
     refetch()
   }, [])
-  // const handleFromChild = (data) => {
-  //   if (data === 'empty') {
-  //     setIsBidder(false)
-  //   } else {
-  //     setIsBidder(true)
-  //   }
-  //   setVisible(true)
-  // }
+
   const draggedValue = new Animated.Value(120)
   if (loading) {
     return <Layout style={styles.containerSpinner}><Spinner/></Layout> 
   } else {
-    console.log('MY PRODUUUUUCT', myProducts.ownItems)
-    myProducts.ownItems.forEach(el => console.log(el.bidProductId.length))
+    // console.log('MY PRODUUUUUCT', myProducts.ownItems)
+    // myProducts.ownItems.forEach(el => console.log(el.bidProductId.length))
     return (
       <>
       <Layout style={styles.container}>
         <View style={styles.containerone}>
-          <Text style={{fontSize: 28, fontWeight: 'bold'}}>Your Products</Text>
+          <Text style={{fontSize: 28, fontWeight: 'bold', color: 'white'}}>My Products</Text>
         </View>
         <View style={styles.containertwo}>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 20}}>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100}}>
             { myProducts.ownItems ? <CarouselCollection data={myProducts.ownItems} navigation={navigation}/> : <Text>Empty</Text> }
-            {/* <ScrollView>
-              <BNIBProducts navigation={props.navigation} products={BNIBProd}/>
-              <BNOBProducts navigation={props.navigation} products={BNOBProd}/>
-              <UsedProducts navigation={props.navigation} products={UsedProd}/>
-            </ScrollView> */}
           </View>
         </View> 
         {/* <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 130, bottom: 100 }} animatedValue={draggedValue}>
@@ -126,7 +114,9 @@ const styles = StyleSheet.create({
   },
   containertwo: {
     flex: 9,
-    backgroundColor: 'whitesmoke',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35
   },

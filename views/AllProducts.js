@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, ImageBackground, Image, Animated, Dimensions, AsyncStorage } from 'react-native'
 
-import axios from 'axios'
-
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from "apollo-boost"
+import { Layout, Spinner, Button, Divider, Text } from '@ui-kitten/components'
+import Carousel from '../components/CarouselSlide'
 
-import { Layout, Spinner } from '@ui-kitten/components';
-import { Button, Text } from '@ui-kitten/components';
+
+import { Entypo } from '@expo/vector-icons';
 import Constants from 'expo-constants'
 import { ScrollView } from 'react-native-gesture-handler';
 import { FontAwesome5 } from '@expo/vector-icons';
 import BNIBProducts from '../components/ProductsByCategory/BNIB'
 import BNOBProducts from '../components/ProductsByCategory/BNOB'
 import UsedProducts from '../components/ProductsByCategory/Used'
-// import allData from '../sample.json'
 import SlidingUpPanel from 'rn-sliding-up-panel'
-import Sliding from '../components/Sliding'
 const { height, width } = Dimensions.get('window')
 
 // import { Snackbar } from 'react-native-paper';
@@ -48,14 +46,37 @@ const FETCH_PRODUCTS = gql`
   }
 `
 
+const FETCH_OWNITEMS = gql`
+  query {
+    ownItems {
+      _id
+      title
+      description
+      bidProductId {
+        _id
+      }
+      value
+      userId
+      photo
+      category
+    }
+  }
+`
+
 function AllProducts(props) {
   // const { userId } = props.route.params
   const { navigation } = props
   const [productDetail, setProductDetail] = useState(null)
   // const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState('')
+  const [CarouselVisible, setCarouselVisible] = useState(false)
+  const {loading: loadingOwnItems, error: errorOwnItems, data: myPayload, refetch: refetchOwnItems} = useQuery(FETCH_OWNITEMS)
 
-  const {loading, error, data} = useQuery(FETCH_PRODUCTS)
+  const handleBid = () => {
+    setCarouselVisible(true)
+  }
+
+  const {loading, error, data, refetch} = useQuery(FETCH_PRODUCTS)
   // const [visible, setVisible] = useState(false)
   // const [payload, setPayload] = useState('')
 
@@ -79,7 +100,8 @@ function AllProducts(props) {
       let value = await AsyncStorage.getItem('userLogin')
       value = JSON.parse(value)
       let userId = value.userId
-      console.log('userrr', userId)
+      console.log('userrr from product', userId)
+      console.log('email from product', value.email)
       setUserId(userId)
     } catch (e) {
       console.log(e)
@@ -88,6 +110,7 @@ function AllProducts(props) {
 
   useEffect(() => {
     fetchHooks()
+    // refetchOwnItems()
   }, [])
 
   const handleFromChild = (data) => {
@@ -116,8 +139,27 @@ function AllProducts(props) {
         <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 60, bottom: 20 }} animatedValue={draggedValue}>
           <View style={styles.panel}>
               { productDetail !== null ? 
-                <Sliding data={productDetail} status={'homeProduct'}/>
-                : <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Click the Product to see its detail</Text> }
+                // <Sliding data={productDetail} status={'homeProduct'}/>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>{productDetail.title}</Text>
+                  <View style={{ paddingHorizontal: 30, marginTop: 20, width: '98%' }}>
+                    <Divider/>
+                    <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
+                      <Entypo name="address" size={24} color="red" />
+                      <Text style={{ marginHorizontal: 15, color: 'white'}}>{productDetail.description}</Text>
+                    </View>
+                    <Divider/>
+                    <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
+                      <Entypo name="phone" size={24} color="red" />
+                      <Text style={{marginLeft: 10, color: 'white'}}>{productDetail.value}</Text>
+                    </View>
+                    <Divider/>
+                    <Button style={{marginTop: 20, borderRadius: 50}} onPress={handleBid}>Bid</Button>
+                    {/* <Button style={{marginTop: 20, borderRadius: 50}} onPress={closePanel}>Cancel</Button> */}
+                    {CarouselVisible ?  myPayload.ownItems.length !== 0 ? <Carousel data={myPayload.ownItems} wantedProduct={data} navigation={navigation}/> : <Text style={{textAlign: 'center', fontSize: '20', fontWeight: 'bold'}}>You can't bid, please post at least 1 product</Text>  : <></>}
+                  </View>
+                </View>
+                : <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>Click the Product to see its detail</Text> }
           </View>
         </SlidingUpPanel>
       </View>

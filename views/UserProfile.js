@@ -47,7 +47,7 @@ function Index(props) {
   const logout = async() => {
     await AsyncStorage.removeItem("userLogin");
     await AsyncStorage.removeItem("token")
-    // client.resetStore()
+    client.resetStore()
     navigation.navigate("home");
   };
   if (loading) {
@@ -82,9 +82,9 @@ function Index(props) {
         <View
           style={{ flexDirection: "row", alignItems: "center", width: "70%" }}
         >
-          <MaterialIcons name="email" size={50} color="red" />
+          <MaterialIcons name="email" size={50} color="black" />
           <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 0 }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
               Email
             </Text>
             <Text style={{ fontSize: 15 }}>{data.user.user.email}</Text>
@@ -98,9 +98,9 @@ function Index(props) {
             marginTop: 15,
           }}
         >
-          <MaterialIcons name="local-phone" size={50} color="red" />
+          <MaterialIcons name="local-phone" size={50} color="black" />
           <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 0 }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
               Phone Number
             </Text>
             <Text style={{ fontSize: 15 }}>{data.user.user.hp}</Text>
@@ -114,9 +114,9 @@ function Index(props) {
             marginTop: 15,
           }}
         >
-          <MaterialIcons name="account-balance-wallet" size={50} color="red" />
+          <MaterialIcons name="account-balance-wallet" size={50} color="black" />
           <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 0 }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
               Quota
             </Text>
             <Text style={{ fontSize: 15 }}>{data.user.user.quota}</Text>
