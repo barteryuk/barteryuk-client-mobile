@@ -2,47 +2,68 @@ import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, ImageBackground, Dimensions, Image, Animated } from 'react-native'
 
 import SlidingUpPanel from 'rn-sliding-up-panel'
-import axios from 'axios'
 
-
-import { Button, Layout, MenuItem, OverflowMenu, Text } from '@ui-kitten/components';
+import { Button, Layout, Text, Spinner, Modal, Card } from '@ui-kitten/components';
+import { FontAwesome5 } from '@expo/vector-icons';
 import Constants from 'expo-constants'
 import { ScrollView } from 'react-native-gesture-handler';
 import { Entypo } from '@expo/vector-icons';
 import Sliding from '../components/Sliding'
+import CarouselCollection from '../components/myCollection'
 
-import allData from '../sample.json'
 
 const { height, width } = Dimensions.get('window')
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from "apollo-boost"
+import CardMyBidders from '../components/CardMyBidders';
+
+const FETCH_OWNITEMS = gql`
+  query {
+    ownItems {
+      _id
+      title
+      description
+      bidProductId {
+        _id
+      }
+      value
+      userId
+      photo
+      category
+    }
+  }
+`
 
 function MyProduct(props) {
-  const [myProducts, setMyProducts] = useState([])
+  const { navigation } = props
+  // const [myProducts, setMyProducts] = useState([])
   const [myBidder, setMyBidder] = useState(null)
+  const {loading, error, data: myProducts} = useQuery(FETCH_OWNITEMS)
+  const [visible, setVisible] = useState(false);
+  const [isBidder, setIsBidder] = useState(false)
 
-  useEffect(() => {
-    const products = allData.filter(el => el.userId === 1)
-    setMyProducts(products)
-  }, [])
-
-  const [selectedIndex, setSelectedIndex] = React.useState(null);
-  const [visible, setVisible] = React.useState(false);
-
-  const onItemSelect = (index) => {
-    setSelectedIndex(index);
-    setVisible(false);
-  };
-
-  const renderToggleButton = () => (
-    <Button size="tiny" onPress={() => setVisible(true)}><Entypo name="home" size={24} color="white" /></Button>
-  );
+  const handleFromChild = (data) => {
+    if (data === 'empty') {
+      setIsBidder(false)
+    } else {
+      setIsBidder(true)
+    }
+    setVisible(true)
+  }
   const draggedValue = new Animated.Value(120)
-  return (
+  if (loading) {
+    return <Layout style={styles.containerSpinner}><Spinner/></Layout> 
+  } else {
+    console.log('MY PRODUUUUUCT', myProducts.ownItems)
+    return (
       <>
-      <View style={styles.container}>
+      <Layout style={styles.container}>
         <View style={styles.containerone}>
+          <Text style={{fontSize: 28, fontWeight: 'bold'}}>Your Products</Text>
         </View>
         <View style={styles.containertwo}>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 40}}>
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 20}}>
+            { myProducts.ownItems ? <CarouselCollection data={myProducts.ownItems} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }
             {/* <ScrollView>
               <BNIBProducts navigation={props.navigation} products={BNIBProd}/>
               <BNOBProducts navigation={props.navigation} products={BNOBProd}/>
@@ -50,34 +71,39 @@ function MyProduct(props) {
             </ScrollView> */}
           </View>
         </View> 
-        <Layout style={{ borderRadius: 50, top: 40, left: 10, position: 'absolute', backgroundColor: 'black', borderWidth: 0}} level='1'>
-          <OverflowMenu
-            anchor={renderToggleButton}
-            visible={visible}
-            selectedIndex={selectedIndex}
-            onSelect={onItemSelect}
-            onBackdropPress={() => setVisible(false)}>
-            <MenuItem title='myProduct' onPress={() => props.navigation.navigate('myProduct')}/>
-            <MenuItem title='myBid' onPress={() => props.navigation.navigate('myBid')}/>
-          </OverflowMenu>
-        </Layout>
-        <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 130, bottom: 100 }} animatedValue={draggedValue}>
+        <Modal visible={visible}
+        backdropStyle={styles.backdrop}
+        onBackdropPress={() => setVisible(false)}>
+          <Card disabled={true}>
+          {isBidder ? 
+            myProducts.ownItems.bidProductId.map((el, index) => (
+              <CardMyBidders key={index} productId={el._id}/>
+            )) : <Text>Zero Bidder</Text> }
+            </Card>
+        </Modal>
+        {/* <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 130, bottom: 100 }} animatedValue={draggedValue}>
           <View style={styles.panel}>
               { myBidder !== null ? 
                 <Sliding data={myBidder} status={'myProduct'}/>
                 : <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Click the your Product to see its bidder</Text> }
           </View>
-        </SlidingUpPanel>
-      </View>
+        </SlidingUpPanel> */}
+        <Button size="tiny" style={{ borderRadius: 50, top: 40, right: 10, position: 'absolute', backgroundColor: '#02c39a', borderWidth: 0}} onPress={() => navigation.openDrawer()}><FontAwesome5 name="bars" size={24} color="white" /></Button>
+      </Layout>
 
       </>
     )
+  }
 }
 
 const styles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#02c39a'
+    backgroundColor: '#02c39a',
+    paddingTop: 20
   },
   containerone: {
     flex: 1,
@@ -104,6 +130,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 5, height: 2 }, 
     shadowOpacity: 0.8, 
     shadowRadius: 7,
+  },
+  containerSpinner: {
+    marginTop: 10, 
+    height: 380, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    backgroundColor: 'whitesmoke'
   }
 })
 export default MyProduct

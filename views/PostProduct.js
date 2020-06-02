@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { Hoshi } from 'react-native-textinput-effects';
 // import { useMutation } from '@apollo/react-hooks'
 // import { Snackbar } from 'react-native-paper';
+// import { Container, Header, Content, Text, Button, Toast } from "native-base";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { FontAwesome5 } from '@expo/vector-icons';
 import { gql } from 'apollo-boost'
@@ -44,6 +45,7 @@ const ADD_PRODUCT = gql`
 function PostProduct(props) {
 
     const [fileObj, setFileObj] = React.useState("https://clipartart.com/images/image-placeholder-clipart-1.png");
+    const [loadingPhoto, setLoadingPhoto] = useState(false)
 
     function pickImage() {
     ImagePicker.launchImageLibraryAsync({
@@ -69,6 +71,7 @@ function PostProduct(props) {
         formData.append("cloud_name", "dporllohn")
         console.log('FORM DATA')
         console.log(formData)
+        setLoadingPhoto(true)
         return axios({
           method: 'POST',
           url: "https://api.cloudinary.com/v1_1/dporllohn/image/upload",
@@ -77,11 +80,13 @@ function PostProduct(props) {
       })
       .then(result => {
         console.log('RESSSSUUULT')
+        setLoadingPhoto(false)
         console.log(result.data.secure_url)
         setFileObj(result.data.secure_url);
       })
       .catch((e) => {
         console.log('ERRROOOOR')
+        setLoadingPhoto(false)
         console.log(e)
         setFileObj(fileObj);
       });
@@ -169,13 +174,19 @@ function PostProduct(props) {
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
               <Button onPress={() => pickImage()}>Pick Image from Library</Button>
             </View>
-            <Button
+            { loadingPhoto ? <Button
+                status="warning"
+                style={{ marginVertical: 50, width: '92%', borderRadius: 20 }}
+            >
+              Uploading Photo ...
+            </Button> : <Button
                 onPress={() => formSubmit()}
                 status="success"
                 style={{ marginVertical: 50, width: '92%', borderRadius: 20 }}
             >
               Save
-            </Button>
+            </Button> }
+
             {/* <Snackbar visible={errVisible} onDismiss={() => setErrVisible(false)} action={{onPress: () => { setErrVisible(false) }}} style={{backgroundColor: "red"}}
             ><Text style={{textAlign: 'center'}}>Please fill all the blank form</Text></Snackbar>
             <Snackbar visible={doneVisible} onDismiss={() => setDoneVisible(false)} action={{onPress: () => { setDoneVisible(false) }}} style={{backgroundColor: "green"}}
@@ -184,6 +195,21 @@ function PostProduct(props) {
         </KeyboardAwareScrollView>
       </View> 
       <Button size="tiny" style={{ borderRadius: 50, top: 35, right: 10, position: 'absolute', backgroundColor: '#02c39a', borderWidth: 0}} onPress={() => props.navigation.openDrawer()}><FontAwesome5 name="bars" size={24} color="white" /></Button>
+      {/* <Container>
+        <Header />
+        <Content padder>
+          <Button
+            onPress={() =>
+              Toast.show({
+                text: "Wrong password!",
+                buttonText: "Okay",
+                duration: 3000
+              })}
+          >
+            <Text>Toast</Text>
+          </Button>
+        </Content>
+      </Container> */}
     </View>
   //   <KeyboardAwareScrollView style={{backgroundColor: 'white', paddingTop: 30}}>
   //   <View style={{ flex: 1, alignItems: 'center'  }}>

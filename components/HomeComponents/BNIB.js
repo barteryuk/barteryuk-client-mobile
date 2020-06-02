@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Carousel from '../ProductsByCategory/Carousel'
 import TagCategory from '../ProductsByCategory/TagCategory'
 
-import { Layout, Spinner } from '@ui-kitten/components';
+import { Layout, Spinner, Text } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native'
 
 function BNIB(props) {
@@ -29,7 +29,7 @@ function BNIB(props) {
     return (
       <>
         <TagCategory category={"Brand New In Box"}/>
-        <Carousel data={BNIBProd} navigation={navigation} cb={handleFromChild}/>
+        { BNIBProd ? <Carousel data={BNIBProd} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }
       </>
     )
 }

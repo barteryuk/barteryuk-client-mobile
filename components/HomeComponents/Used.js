@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import Carousel from '../ProductsByCategory/Carousel'
 import TagCategory from '../ProductsByCategory/TagCategory'
 
-import { Layout, Spinner } from '@ui-kitten/components';
+import { Layout, Spinner, Text } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native'
 
 function Used(props) {
@@ -29,7 +29,7 @@ function Used(props) {
     return (
       <>
         <TagCategory category={"Used"}/>
-        <Carousel data={UsedProd} navigation={navigation} cb={handleFromChild}/>      
+        { UsedProd ? <Carousel data={UsedProd} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }         
       </>
     )
 }
