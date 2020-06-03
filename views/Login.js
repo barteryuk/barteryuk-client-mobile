@@ -7,10 +7,8 @@ import {
   ImageBackground,
   AsyncStorage } from 'react-native';
 import { Button } from '@ui-kitten/components';
-// import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
-import { Kaede } from 'react-native-textinput-effects';
+import { Hoshi } from 'react-native-textinput-effects';
 import Constants from 'expo-constants'
-// import { POST_MOVIE, FETCH_MOVIES, POST_TVSERIE, FETCH_TVSERIES } from '../queries'
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from "apollo-boost"
 // import { Snackbar } from 'react-native-paper';
@@ -86,7 +84,7 @@ const Login = (props) => {
           <ImageBackground source={require("../assets/logo.png")} style={styles.imgBackgroundLogin}></ImageBackground>
        </View>
        <View style={styles.containertwo}>
-        <Kaede
+        <Hoshi
             onChangeText={text => setEmail(text)}
             value={email}
             label={'Email'}
@@ -94,7 +92,7 @@ const Login = (props) => {
             inputStyle={{ color: 'black', width: 400}}
             style={styles.input}
         />
-        <Kaede
+        <Hoshi
             onChangeText={text => setPassword(text)}
             value={password}
             label={'Password'}
@@ -136,8 +134,6 @@ const Login = (props) => {
 const styles = StyleSheet.create({
   input: {
       width: '90%',
-      backgroundColor: '#02c39a',
-      borderWidth: 1,
       marginVertical: 10
   },
   imgBackgroundLogin: {

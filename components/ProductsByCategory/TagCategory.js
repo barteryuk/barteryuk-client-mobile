@@ -10,7 +10,7 @@ function TagCategory (props) {
         <Text style={{ marginBottom : 1, marginTop : 15, marginLeft: 30, fontWeight : "bold" , fontSize : 23, color : 'grey', textAlign: 'left' }}>{category}</Text>
       </TouchableOpacity>
       <View style={{alignItems: 'center'}}>
-        <Divider style={{marginBottom: 10, borderWidth: 0.05, backgroundColor: 'grey', width: '92%'}}/>
+        <Divider style={{marginBottom: 15, borderWidth: 1.25, backgroundColor: 'grey', width: '92%'}}/>
       </View>
       
     </>

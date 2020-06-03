@@ -5,15 +5,19 @@ import { Card, Button, ButtonGroup, Modal, Layout } from '@ui-kitten/components'
 import axios from 'axios';
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
+import { Entypo } from '@expo/vector-icons';
+import { ScrollView } from 'react-native-gesture-handler';
+
+
 const { width: screenWidth, height } = Dimensions.get('window')
 
 
-const BID_ITEM = gql`
-    mutation BidItem(
+const CLOSE_BID = gql`
+    mutation CloseBid(
       $itemId: ID!
       $collateralId: ID!
       ) {
-      bidItem(
+      closeBid(
         itemId: $itemId
         collateralId: $collateralId
       ) {
@@ -29,6 +33,34 @@ const BID_ITEM = gql`
             userId
             photo
             category
+            status
+          }
+      }
+    }
+`
+
+const REJECT_BID = gql`
+    mutation RejectBid(
+      $itemId: ID!
+      $collateralId: ID!
+      ) {
+      rejectBid(
+        itemId: $itemId
+        collateralId: $collateralId
+      ) {
+          message
+          result {
+            _id
+            title
+            description
+            bidProductId {
+              _id
+            }
+            value
+            userId
+            photo
+            category
+            status
           }
       }
     }
@@ -40,6 +72,9 @@ export default function Slider(props) {
   const [visible, setVisible] = useState(false)
   const [empty, setEmpty] = useState(true)
   const [payload, setPayload] = useState(null)
+  const [CloseBid] = useMutation(CLOSE_BID)
+  const [RejectBid] = useMutation(REJECT_BID)
+  
 
   const backToParent = (item) => {
     console.log('leeeenght', item.bidProductId.length)
@@ -52,6 +87,17 @@ export default function Slider(props) {
       setEmpty(false)
     }
   }
+
+  const closeBid = (prodId) => {
+    CloseBid({ variables: { itemId: prodId, collateralId: payload._id }})
+    setVisible(false)
+  }
+
+  const rejectBid = (prodId) => {
+    RejectBid({ variables: { itemId: prodId, collateralId: payload._id }})
+    setVisible(false)
+  }
+
   const renderItem = ({ item, index }, parallaxProps) => {
     return (
         // <TouchableOpacity
@@ -103,21 +149,34 @@ export default function Slider(props) {
       <Modal visible={visible}
           backdropStyle={styles.backdrop}
           onBackdropPress={() => setVisible(false)}>
-            <Card disabled={true}>
+            <Card 
+            disabled={true}
+            style={styles.cardWrapper}>
               {empty ? <Text>Zero Bidder</Text> :  
               payload.bidProductId.map((el, index) => (
                 <Card
                 key={index}
-                style={styles.item}
+                style={styles.card}
                 status='basic'
                 > 
-                  <Image source={el.photo} style={styles.image}></Image>
-                  <Text>
-                    {el.title}
-                  </Text>
-                  <Text>
-                    {el.description}
-                  </Text>
+                  <View>
+                    <Image source={{ uri: el.photo }} style={{width: 125, height: 125}}></Image>
+                  </View>
+                  <View>
+                    <Text style={{fontWeight: 'bold', fontSize: 20, marginTop: 10}}>
+                      {el.title}
+                    </Text>
+                    <Text>
+                      {el.description}
+                    </Text>
+                    <Text>
+                      {el.value} IDR
+                    </Text>
+                  </View>
+                  <View style={{position: 'absolute', top: 10, right: 10, flexDirection: "row"}}>
+                    <Button size="tiny" onPress={() => closeBid(el._id)} status="success" style={{width: 50, borderRadius: 25}}><Entypo name="check" size={20} color="black" /></Button>
+                    <Button size="tiny" onPress={() => rejectBid(el._id)} status="danger" style={{width: 50, borderRadius: 25}}><Entypo name="cross" size={20} color="black" /></Button>
+                  </View>
                 </Card>
               ))}
               </Card>
@@ -136,12 +195,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black'
   },
+  cardWrapper: {
+    paddingHorizontal: 2,
+  },
   item: {
       // width: screenWidth - 60,
       height: screenWidth,
       marginVertical: 30,
       // backgroundColor: 'white',
       borderRadius: 20
+  },
+  card: {
+    marginVertical: 5,
+    marginHorizontal: 0,
+    shadowOffset: {width:10, height:10}, 
+    shadowColor: 'rgba(138,149,158,0.2)',
+    shadowOpacity: 1,  
+    elevation: 10, 
   },
   imageContainer: {
       flex: 1,

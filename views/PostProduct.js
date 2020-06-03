@@ -143,7 +143,7 @@ function PostProduct(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerone}>
-        <Text style={{color: 'black', fontSize: 25, fontWeight: 'bold'}}>Add Product</Text>
+        <Text style={{color: 'white', fontSize: 25, fontWeight: 'bold'}}>Add Product</Text>
       </View>
       <View style={styles.containertwo}>
         <KeyboardAwareScrollView style={{backgroundColor: 'white', paddingTop: 30}}>
@@ -194,7 +194,7 @@ function PostProduct(props) {
             </Button> : <Button
                 onPress={() => formSubmit()}
                 status="success"
-                style={{ marginVertical: 50, width: '92%', borderRadius: 20 }}
+                style={{ marginVertical: 50, width: '92%', borderRadius: 20, backgroundColor: '#02c39a' }}
             >
               Save
             </Button> }
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 0,
     marginVertical: 10
   },
   container: {
