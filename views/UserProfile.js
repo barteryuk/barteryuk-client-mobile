@@ -47,7 +47,7 @@ function Index(props) {
   const logout = async() => {
     await AsyncStorage.removeItem("userLogin");
     await AsyncStorage.removeItem("token")
-    client.resetStore()
+    client.clearStore()
     navigation.navigate("home");
   };
   if (loading) {

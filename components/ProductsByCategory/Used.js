@@ -16,7 +16,7 @@ function Used(props) {
     useEffect(() => {
       let UsedProd = []
       products.forEach(el => {
-        if (el.category === 'Used' && el.userId !== userId ) {
+        if (el.category === 'Used' && el.userId !== userId && el.status === 'open') {
           UsedProd.push(el)
         } 
       })

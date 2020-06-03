@@ -17,7 +17,7 @@ function BNIB(props) {
   useEffect(() => {
     let BNIBProd = []
     products.forEach(el => {
-      if (el.category === 'BNIB' && el.userId !== userId ) {
+      if (el.category === 'BNIB' && el.userId !== userId && el.status === 'open') {
         BNIBProd.push(el)
       } 
     })

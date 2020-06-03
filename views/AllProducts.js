@@ -38,6 +38,7 @@ const FETCH_PRODUCTS = gql`
         category
         tags
       }
+      status
       value
       userId
       photo
@@ -46,35 +47,35 @@ const FETCH_PRODUCTS = gql`
   }
 `
 
-const FETCH_OWNITEMS = gql`
-  query {
-    ownItems {
-      _id
-      title
-      description
-      bidProductId {
-        _id
-      }
-      value
-      userId
-      photo
-      category
-    }
-  }
-`
+// const FETCH_OWNITEMS = gql`
+//   query {
+//     ownItems {
+//       _id
+//       title
+//       description
+//       bidProductId {
+//         _id
+//       }
+//       value
+//       userId
+//       photo
+//       category
+//     }
+//   }
+// `
 
 function AllProducts(props) {
   // const { userId } = props.route.params
   const { navigation } = props
-  const [productDetail, setProductDetail] = useState(null)
+  // const [productDetail, setProductDetail] = useState(null)
   // const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState('')
-  const [CarouselVisible, setCarouselVisible] = useState(false)
-  const {loading: loadingOwnItems, error: errorOwnItems, data: myPayload, refetch: refetchOwnItems} = useQuery(FETCH_OWNITEMS)
+  // const [CarouselVisible, setCarouselVisible] = useState(false)
+  // const {loading: loadingOwnItems, error: errorOwnItems, data: myPayload, refetch: refetchOwnItems} = useQuery(FETCH_OWNITEMS)
 
-  const handleBid = () => {
-    setCarouselVisible(true)
-  }
+  // const handleBid = () => {
+  //   setCarouselVisible(true)
+  // }
 
   const {loading, error, data, refetch} = useQuery(FETCH_PRODUCTS)
   // const [visible, setVisible] = useState(false)
@@ -114,10 +115,15 @@ function AllProducts(props) {
   }, [])
 
   const handleFromChild = (data) => {
-    setProductDetail(data)
+    // setProductDetail(data)
+    navigation.navigate('Detail', {productDetail: data})
   }
   const draggedValue = new Animated.Value(120)
-  return (
+  if (loading) {
+    return <Text>Loading</Text>
+  } else {
+    // console.log('data dari All Prod', data.products)
+    return (
       <>
       <View style={styles.container}>
         <View style={styles.containerone}>
@@ -136,7 +142,7 @@ function AllProducts(props) {
           </View>
         </View> 
         <Button size="tiny" style={{ borderRadius: 50, top: 40, right: 10, position: 'absolute', backgroundColor: '#02c39a', borderWidth: 0}} onPress={() => props.navigation.openDrawer()}><FontAwesome5 name="bars" size={24} color="white" /></Button>
-        <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 60, bottom: 20 }} animatedValue={draggedValue}>
+        {/* <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 60, bottom: 20 }} animatedValue={draggedValue}>
           <View style={styles.panel}>
               { productDetail !== null ? 
                 // <Sliding data={productDetail} status={'homeProduct'}/>
@@ -156,16 +162,17 @@ function AllProducts(props) {
                     <Divider/>
                     <Button style={{marginTop: 20, borderRadius: 50}} onPress={handleBid}>Bid</Button>
                     {/* <Button style={{marginTop: 20, borderRadius: 50}} onPress={closePanel}>Cancel</Button> */}
-                    {CarouselVisible ?  myPayload.ownItems.length !== 0 ? <Carousel data={myPayload.ownItems} wantedProduct={data} navigation={navigation}/> : <Text style={{textAlign: 'center', fontSize: '20', fontWeight: 'bold'}}>You can't bid, please post at least 1 product</Text>  : <></>}
+                    {/* {CarouselVisible ?  myPayload.ownItems.length !== 0 ? <Carousel data={myPayload.ownItems} wantedProduct={productDetail} navigation={navigation}/> : <Text style={{textAlign: 'center', fontSize: '20', fontWeight: 'bold'}}>You can't bid, please post at least 1 product</Text>  : <></>}
                   </View>
                 </View>
                 : <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>Click the Product to see its detail</Text> }
           </View>
-        </SlidingUpPanel>
+        </SlidingUpPanel> */}
       </View>
 
       </>
     )
+  }
 }
 
 const styles = StyleSheet.create({

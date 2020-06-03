@@ -7,6 +7,7 @@ import AllProducts from '../views/AllProducts'
 import PostProduct from '../views/PostProduct'
 import Transaction from '../views/Transaction'
 import UserProfile from '../views/UserProfile'
+import Detail from '../views/Detail'
 import MyProduct from '../views/MyProduct'
 import MyBid from '../views/MyBid'
 import Sidebar from '../components/Sidebar'
@@ -34,32 +35,31 @@ export default function DrawerSideNavigator () {
         drawerIcon: ({ focused }) => (
         <Foundation name="home" size={24} color="black" />              ),
       }} />
-
+      <Drawer.Screen name="Detail" component={Detail} options={{
+        drawerIcon: ({ focused }) => (
+        <Foundation name="home" size={24} color="black" />              ),
+      }} />
+      <Drawer.Screen name="My Product" component={MyProduct} options={{
+        drawerIcon: ({ focused }) => (
+        <Ionicons name="ios-archive" size={24} color="black" />)
+      }}/>
       <Drawer.Screen name="Post Product" component={PostProduct}  options={{
         drawerIcon: ({ focused }) => (
         <Ionicons name="ios-create" size={24} color="black" />        ),
       }} />
-
-
-      <Drawer.Screen name="User Profile" component={UserProfile} options={{
-        drawerIcon: ({ focused }) => (
-          <FontAwesome name="user" size={24} color="black" />
-        )
-      }} />
-
       <Drawer.Screen name="Transaction" component={Transaction} options={{
         drawerIcon: ({ focused }) => (
           <Entypo name="wallet" size={24} color="black" />
         )
       }} />
-
-      <Drawer.Screen name="My Product" component={MyProduct} options={{
+      {/* <Drawer.Screen name="My Bid" component={MyBid} options={{
         drawerIcon: ({ focused }) => (
         <Ionicons name="ios-archive" size={24} color="black" />)
-      }}/>
-      <Drawer.Screen name="My Bid" component={MyBid} options={{
+      }} /> */}
+      <Drawer.Screen name="User Profile" component={UserProfile} options={{
         drawerIcon: ({ focused }) => (
-        <Ionicons name="ios-archive" size={24} color="black" />)
+          <FontAwesome name="user" size={24} color="black" />
+        )
       }} />
     </Drawer.Navigator>
     </>

@@ -87,7 +87,8 @@ export default function Slider(props) {
       setEmpty(false)
     }
   }
-
+  // prodId > barang yg gua minat > hape asus
+  // collateral > barang milik gua ? gelas
   const closeBid = (prodId) => {
     CloseBid({ variables: { itemId: prodId, collateralId: payload._id }})
     setVisible(false)
