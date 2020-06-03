@@ -148,28 +148,28 @@ import { AppRegistry } from "react-native";
 //   InMemoryCache,
 //   HttpLink,
 // } from "apollo-boost";
-import { ApolloClient } from 'apollo-client';
-import { createHttpLink } from 'apollo-link-http';
-import { setContext } from 'apollo-link-context';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloClient } from "apollo-client";
+import { createHttpLink } from "apollo-link-http";
+import { setContext } from "apollo-link-context";
+import { InMemoryCache } from "apollo-cache-inmemory";
 import { AsyncStorage } from "react-native";
 // const httpLink = new HttpLink({ uri: "http://192.168.43.163:3999" });
-const httpLink = createHttpLink ({ uri: "http://192.168.43.163:3999" });
+const httpLink = createHttpLink({ uri: "http://192.168.43.190:4000" });
 
-const authLink = setContext( async (_, { headers }) => {
+const authLink = setContext(async (_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const token = await AsyncStorage.getItem('token');
-  console.log('token blablabla')
-  console.log(token)
+  const token = await AsyncStorage.getItem("token");
+  console.log("token blablabla");
+  console.log(token);
   // value = JSON.parse(value)
   // const token = value.token
   // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
-      access_token: token
-    }
-  }
+      access_token: token,
+    },
+  };
 });
 // const authLink = new ApolloLink((operation, forward) => {
 //   // const token = AsyncStorage.getItem("userLogin");
