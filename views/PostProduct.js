@@ -58,6 +58,7 @@ const FETCH_PRODUCTS = gql`
   }
 `
 function PostProduct(props) {
+    const { navigation } = props
 
     const [fileObj, setFileObj] = React.useState("https://clipartart.com/images/image-placeholder-clipart-1.png");
     const [loadingPhoto, setLoadingPhoto] = useState(false)
@@ -139,6 +140,7 @@ function PostProduct(props) {
     setValue('')
     setSelectedIndex(0)
     setFileObj("https://clipartart.com/images/image-placeholder-clipart-1.png")
+    navigation.navigate('My Product')
   }
   return (
     <View style={styles.container}>
@@ -188,13 +190,13 @@ function PostProduct(props) {
             </View>
             { loadingPhoto ? <Button
                 status="warning"
-                style={{ marginVertical: 50, width: '92%', borderRadius: 20 }}
+                style={{ marginTop: 150, width: '92%', borderRadius: 20 }}
             >
               Uploading Photo ...
             </Button> : <Button
                 onPress={() => formSubmit()}
                 status="success"
-                style={{ marginVertical: 50, width: '92%', borderRadius: 20, backgroundColor: '#02c39a' }}
+                style={{ marginTop: 150, width: '92%', borderRadius: 20, backgroundColor: '#02c39a' }}
             >
               Save
             </Button> }

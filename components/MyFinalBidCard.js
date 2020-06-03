@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, View, Dimensions, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 import { Card, Button, ButtonGroup, Modal, Layout } from '@ui-kitten/components';
@@ -11,105 +11,44 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 const { width: screenWidth, height } = Dimensions.get('window')
 
-
-const CLOSE_BID = gql`
-    mutation CloseBid(
-      $itemId: ID!
-      $collateralId: ID!
-      ) {
-      closeBid(
-        itemId: $itemId
-        collateralId: $collateralId
-      ) {
-          message
-          result {
-            _id
-            title
-            description
-            bidProductId {
-              _id
-            }
-            value
-            userId
-            photo
-            category
-            status
-          }
-      }
-    }
-`
-
-const REJECT_BID = gql`
-    mutation RejectBid(
-      $itemId: ID!
-      $collateralId: ID!
-      ) {
-      rejectBid(
-        itemId: $itemId
-        collateralId: $collateralId
-      ) {
-          message
-          result {
-            _id
-            title
-            description
-            bidProductId {
-              _id
-            }
-            value
-            userId
-            photo
-            category
-            status
-          }
-      }
-    }
-`
-
-
 export default function Slider(props) {
-  const { data, navigation, status } = props
-  const [visible, setVisible] = useState(false)
-  const [empty, setEmpty] = useState(true)
-  const [payload, setPayload] = useState(null)
-  const [CloseBid] = useMutation(CLOSE_BID)
-  const [RejectBid] = useMutation(REJECT_BID)
+  const { products, navigation, userId } = props
+  // const [visible, setVisible] = useState(false)
   
+  // const [payload, setPayload] = useState(null)
+  const [MyBidProd, setMyBidProd] = useState(null);
 
-  const backToParent = (item) => {
-    console.log('leeeenght', item.bidProductId.length)
-    if (item.bidProductId.length === 0) {
-      console.log('see Status', item.status)
-      console.log('see name', item.title)
-      console.log('==========')
-      setVisible(true)
-      setEmpty(true)
-    } else {
-      console.log('see Status', item.status)
-      console.log('see name', item.title)
-      console.log('==========')
-      setPayload(item)
-      setVisible(true)
-      setEmpty(false)
-    }
+  useEffect(() => {
+    let payload = []
+    products.forEach(el => {
+      if (el.finalBidderId.length !== 0) {
+        console.log('BIDDER FINAL ID ========= FROM CarouselBidCard', el.finalBidderId[0]._id)
+        console.log('BIDDER email ========= FROM CarouselBidCard', el.finalBidderId[0].email)
+        console.log('USER IDNYAA', userId)
+        if (el.finalBidderId[0]._id === userId ) {
+          payload.push(el)
+          console.log('INI ELLLnya', el)
+        } 
+      }
+    })
+    console.log('PAYLOADNYAAA', payload)
+    setMyBidProd(payload)
+  }, [])
+
+  const backToParent = () => {
   }
-  // prodId/item > barang yg gua minat > hape asus
+  // prodId > barang yg gua minat > hape asus
   // collateral > barang milik gua ? gelas
-  const closeBid = (prodId) => {
-    CloseBid({ variables: { itemId: payload._id, collateralId: prodId }})
-    setVisible(false)
-  }
 
-  const rejectBid = (prodId) => {
-    RejectBid({ variables: { itemId: payload._id, collateralId: prodId }})
-    setVisible(false)
+  const [show, setShow] = useState(false)
+  const showCarousel = () => {
+    setShow(true)
   }
-  console.log()
+  const giveRating = () => {
+    console.log('giveRating')
+  }
   const renderItem = ({ item, index }, parallaxProps) => {
     return (
-        // <TouchableOpacity
-        //     // onPress={ () => navigation.navigate('detail' , { item, status }) }
-        // >
             <Layout style={styles.item}>
                 <ParallaxImage
                     source={{ uri: item.photo }}
@@ -118,42 +57,29 @@ export default function Slider(props) {
                     parallaxFactor={0.1}
                     {...parallaxProps}
                 />
-                {/* <Text style={styles.title} numberOfLines={2}>
-                    { item.title }
-                </Text> */}
                 <Card style={{borderRadius: 20}}>
                   <Text style={{fontSize: 18, fontWeight: 'bold'}}>{ item.title }</Text>
                   <Text>{ item.value } IDR</Text>
-                  <Button style={{marginTop: 10}} onPress={() => backToParent(item)}>See Bidders</Button>
-                  {/* <Text>Status: { item.status }</Text> */}
-                  {/* <View style={{alignItems: 'center', marginVertical: 10}}>
-                    <View style={styles.controlContainer}>  
-                      <ButtonGroup style={styles.buttonGroup} status='control'>
-                        {item.tag.map((val, index) => (
-                          <Button key={index}>{ val }</Button>
-                        ))}
-                      </ButtonGroup>
-                    </View>
-                  </View> */}
-                  {/* <Text>rating: { item.rating }</Text> */}
+                  <Button style={{marginTop: 10}} onPress={() => giveRating(item)}>Give Rating</Button>
                 </Card>
             </Layout>
-        // </TouchableOpacity>
     )
   } 
   return (
   <>
     <Layout>
-      <Carousel
+      {show ? <></> : <Button onPress={() => showCarousel()}>Look for My Transaction</Button> }
+      {show ? <Carousel
           style={{ flex: 1, justifyContent: "center", alignItems: 'center', padding: 0, backgroundColor: 'black' }}
           sliderWidth={screenWidth - 40}
           sliderHeight={20}
           itemWidth={screenWidth - 70}
-          data={data}
+          data={MyBidProd}
           renderItem={renderItem}
           hasParallaxImages={true}
-      />
-      <Modal visible={visible}
+      />: <></>}
+
+      {/* <Modal visible={visible}
           backdropStyle={styles.backdrop}
           onBackdropPress={() => setVisible(false)}>
             <Card 
@@ -190,7 +116,7 @@ export default function Slider(props) {
                 </Card>
               ))}
               </Card>
-      </Modal>
+      </Modal> */}
     </Layout>
 
   </>

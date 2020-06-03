@@ -35,8 +35,8 @@ const BID_ITEM = gql`
 `
 
 const SEND_MAIL = gql`
-  mutation SendMail($email: String!){
-    sendMail(email: $email){
+  mutation SendMail($id: ID!){
+    sendMail(id: $id){
       status
       message
     } 
@@ -50,10 +50,11 @@ export default function Slider(props) {
 
   const chooseToBid = (own) => {
     console.log('wanted', wantedProduct._id)
+    console.log('wanted data', wantedProduct)
     console.log('own', own._id)
     console.log('dataaaa', own)
     BidItem({ variables: { itemId: wantedProduct._id, collateralId: own._id }})
-    // SendMail({ variables: { email: wantedProduct.email }})
+    SendMail({ variables: { id: wantedProduct.userId }})
     console.log('successfully bid')
   }
 

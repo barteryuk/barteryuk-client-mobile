@@ -23,29 +23,33 @@ const { height, width } = Dimensions.get('window')
 // } from '@react-navigation/native';
 
 const FETCH_PRODUCTS = gql`
-  query {
-    products {
+query {
+  products {
+    _id
+    title
+    description
+    bidProductId {
       _id
-      title
-      description
-      bidProductId {
-        _id
-        title
-        description
-        value
-        userId
-        photo
-        category
-        tags
-      }
-      status
-      value
       userId
-      photo
-      category
     }
+    status
+    value
+    userId
+    photo
+    category
+    finalBidderId {
+      _id 
+      email 
+      password 
+      hp  
+      rating 
+      quota 
+      status 
+    }
+    finalBidderRating
   }
-`
+}
+`;
 
 // const FETCH_OWNITEMS = gql`
 //   query {
@@ -121,7 +125,7 @@ function AllProducts(props) {
   const draggedValue = new Animated.Value(120)
   if (loading) {
     return <Text>Loading</Text>
-  } else {
+  }  else {
     // console.log('data dari All Prod', data.products)
     return (
       <>

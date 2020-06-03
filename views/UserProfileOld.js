@@ -8,9 +8,9 @@ import {
   AsyncStorage,
 } from "react-native";
 import Svg, { Ellipse } from "react-native-svg";
-import { Button, Modal, Card, Input } from "@ui-kitten/components";
+import { Button } from "@ui-kitten/components";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 const FETCH_USER = gql`
   query user($email: String!) {
@@ -29,38 +29,12 @@ const FETCH_USER = gql`
     }
   }
 `;
-
-const CREATE_TOPUP = gql`
-  mutation addPayment($email: String!, $topUp: Int!) {
-    addPayment(email: $email, topUp: $topUp) {
-      status
-      message {
-        message
-      }
-      payment {
-        id
-        email
-        topUp
-        status
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
 function Index(props) {
   const { navigation } = props;
   const [email, setEmail] = useState("");
   const { loading, client, data } = useQuery(FETCH_USER, {
     variables: { email: email },
   });
-
-  const [visible, setVisible] = useState(false);
-  const [visibleMessage, setVisibleMessage] = useState(false);
-  const [value, setValue] = useState(0);
-  const [createTopUp] = useMutation(CREATE_TOPUP, {});
-
   const fetchStorage = async () => {
     let value = await AsyncStorage.getItem("userLogin");
     value = JSON.parse(value);
@@ -70,36 +44,12 @@ function Index(props) {
   useEffect(() => {
     fetchStorage();
   }, []);
-  const logout = async () => {
+  const logout = async() => {
     await AsyncStorage.removeItem("userLogin");
-    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("token")
     client.clearStore()
     navigation.navigate("home");
   };
-
-  // const handleRequestQuota = () => {
-  //   console.log("ini created");
-  //   setVisible(false);
-  //   // createTopUp({
-  //   //   variables: { email: email, topUp: 8 },
-  //   // });
-  // };
-
-  const handleRequestQuota = () => {
-    if (value <= data.user.user.quota && Number(value) >= 1) {
-      createTopUp({
-        variables: { email: email, topUp: Math.floor(Number(value)) },
-      });
-      console.log("created");
-      setVisibleMessage(false);
-      setVisible(false);
-      setValue(0);
-    } else {
-      setVisibleMessage(true);
-      console.log("TopUp>Quota", typeof data.user.user.quota, typeof value);
-    }
-  };
-
   if (loading) {
     return <Text>Loading</Text>;
   } else {
@@ -164,11 +114,7 @@ function Index(props) {
             marginTop: 15,
           }}
         >
-          <MaterialIcons
-            name="account-balance-wallet"
-            size={50}
-            color="black"
-          />
+          <MaterialIcons name="account-balance-wallet" size={50} color="black" />
           <View style={{ marginLeft: 20 }}>
             <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
               Quota
@@ -179,48 +125,7 @@ function Index(props) {
         <View
           style={{ flexDirection: "row", alignItems: "center", marginTop: 30 }}
         >
-          <Button
-            style={{ borderRadius: 40 }}
-            status="success"
-            onPress={() => setVisible(true)}
-          >
-            Request Quota
-          </Button>
-
-          <Modal
-            visible={visible}
-            backdropStyle={styles.backdrop}
-            onBackdropPress={() => {
-              setVisible(false);
-              setVisibleMessage(false);
-              setValue(0);
-            }}
-          >
-            <Card disabled={true}>
-              <Text>Input Top Up Amount</Text>
-              {visibleMessage ? (
-                <Text style={{ color: "red" }}>
-                  Requested Top Up Must Be More Or Equal To 1, and More Than
-                  Quota!!!
-                </Text>
-              ) : null}
-              <Input
-                placeholder="number only"
-                value={value}
-                keyboardType={"numeric"}
-                onChangeText={(nextValue) => {
-                  if (nextValue >= 1) {
-                    setVisibleMessage(false);
-                    setValue(nextValue);
-                  } else {
-                    setValue(0);
-                    setVisibleMessage(true);
-                  }
-                }}
-              />
-              <Button onPress={handleRequestQuota}>Top Up</Button>
-            </Card>
-          </Modal>
+          <Button status="success">Request Quota</Button>
         </View>
         <View></View>
         <View
@@ -272,9 +177,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 200,
     height: 200,
-  },
-  backdrop: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 });
 export default Index;

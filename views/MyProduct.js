@@ -15,7 +15,6 @@ import CarouselCollection from '../components/myCollection'
 const { height, width } = Dimensions.get('window')
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from "apollo-boost"
-import CardMyBidders from '../components/CardMyBidders';
 
 const FETCH_OWNITEMS = gql`
   query {
@@ -33,6 +32,7 @@ const FETCH_OWNITEMS = gql`
         category
         tags
       }
+      status
       value
       userId
       photo
@@ -70,13 +70,6 @@ function MyProduct(props) {
             { myProducts.ownItems ? <CarouselCollection data={myProducts.ownItems} navigation={navigation}/> : <Text>Empty</Text> }
           </View>
         </View> 
-        {/* <SlidingUpPanel showBackdrop={false} draggableRange={{ top: height - 130, bottom: 100 }} animatedValue={draggedValue}>
-          <View style={styles.panel}>
-              { myBidder !== null ? 
-                <Sliding data={myBidder} status={'myProduct'}/>
-                : <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Click the your Product to see its bidder</Text> }
-          </View>
-        </SlidingUpPanel> */}
         <Button size="tiny" style={{ borderRadius: 50, top: 40, right: 10, position: 'absolute', backgroundColor: '#02c39a', borderWidth: 0}} onPress={() => navigation.openDrawer()}><FontAwesome5 name="bars" size={24} color="white" /></Button>
       </Layout>
 
