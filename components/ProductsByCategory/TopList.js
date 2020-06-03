@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from 'react'
+// import { useQuery } from '@apollo/react-hooks';
+
 import Carousel from './Carousel'
 import TagCategory from './TagCategory'
 
 import { Layout, Spinner, Text } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native'
 
-function Used(props) {
+function BNIB(props) {
   const { navigation, products, userId } = props
-  const [ UsedProd, setUsedProd ] = useState(null)
+  const [ TopListProd, setTopListProd ] = useState(null)
   const handleFromChild = (data) => {
     props.cb(data)
   }
-  
-  
-    useEffect(() => {
-      let UsedProd = []
-      products.forEach(el => {
-        if (el.category === 'Used' && el.userId !== userId && el.status === 'open' && el.topListingStatusDate === '') {
-          UsedProd.push(el)
-        } 
-      })
-      setUsedProd(UsedProd)
-    }, [])
+
+  useEffect(() => {
+    let TopListProd = []
+    products.forEach(el => {
+      if (el.topListingStatusDate !== '') {
+        TopListProd.push(el)
+      } 
+    })
+    setTopListProd(TopListProd)
+  }, [])
 
     return (
       <>
-        <TagCategory category={"Used"}/>
-        { UsedProd ? <Carousel data={UsedProd} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }     
+        <TagCategory category={"Top Listing Products"}/>
+        { TopListProd ? <Carousel data={TopListProd} navigation={navigation} cb={handleFromChild}/> : <Text>Empty</Text> }
       </>
     )
 }
@@ -40,4 +41,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'black'
   }
 })
-export default Used
+export default BNIB

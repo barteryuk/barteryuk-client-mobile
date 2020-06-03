@@ -7,6 +7,7 @@ import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
 import { Entypo } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
+import { Snackbar } from 'react-native-paper';
 
 
 const { width: screenWidth, height } = Dimensions.get('window')
@@ -37,6 +38,46 @@ const CLOSE_BID = gql`
           }
       }
     }
+`
+const TOP_LIST = gql`
+mutation setPrimeDate($itemId: ID!, $numDays: Float!) {
+  setPrimeList(itemId: $itemId, numDays: $numDays){
+    message
+    result {
+      _id
+    title
+    description
+    value
+    userId
+    photo
+    category
+    tags
+    status
+    productOwnerRating
+    finalBidderRating
+    bidProductId {
+      _id
+    	title
+    	description
+    	value
+    	userId
+    	photo
+    	category
+    	tags
+    }
+		finalBidderId {
+      _id 
+    	email 
+    	password 
+    	hp  
+    	rating 
+    	quota 
+    	status 
+    }
+    topListingStatusDate
+    }
+  }
+}
 `
 
 const REJECT_BID = gql`
@@ -74,6 +115,7 @@ export default function Slider(props) {
   const [payload, setPayload] = useState(null)
   const [CloseBid] = useMutation(CLOSE_BID)
   const [RejectBid] = useMutation(REJECT_BID)
+  const [setPrimeDate] = useMutation(TOP_LIST)
   
 
   const backToParent = (item) => {
@@ -93,11 +135,22 @@ export default function Slider(props) {
       setEmpty(false)
     }
   }
+
+  const [msg, setMsg] = useState('')
+  const [doneVisible, setDoneVisible] = useState(false)
+  const makeTopList = (item) => {
+    console.log('itemIDDDD', item._id)
+    setPrimeDate({ variables: { itemId: item._id, numDays: 1 }})
+    setDoneVisible(true)
+    setMsg('Successfully made Product to TopList')
+  }
   // prodId/item > barang yg gua minat > hape asus
   // collateral > barang milik gua ? gelas
   const closeBid = (prodId) => {
     CloseBid({ variables: { itemId: payload._id, collateralId: prodId }})
     setVisible(false)
+    setDoneVisible(true)
+    setMsg('Accepted')
   }
 
   const rejectBid = (prodId) => {
@@ -124,7 +177,19 @@ export default function Slider(props) {
                 <Card style={{borderRadius: 20}}>
                   <Text style={{fontSize: 18, fontWeight: 'bold'}}>{ item.title }</Text>
                   <Text>{ item.value } IDR</Text>
-                  <Button style={{marginTop: 10}} onPress={() => backToParent(item)}>See Bidders</Button>
+                  { item.status !== 'close' ?     
+                  // 
+                  <>
+                  <ButtonGroup style={{marginTop: 10, alignItems: 'center', justifyContent: 'center'}} status='primary'>
+                    <Button onPress={() => backToParent(item)} size="tiny">See Bidders</Button>
+                  </ButtonGroup> 
+               
+                  <ButtonGroup style={{marginTop: 10, alignItems: 'center', justifyContent: 'center'}} status='success'>
+                    <Button onPress={() => makeTopList(item)} size="tiny">Top List</Button>
+                  </ButtonGroup>
+                  </>
+                  :<Button style={{marginTop: 10}} disabled={true}>Already Bid</Button> }
+                  
                   {/* <Text>Status: { item.status }</Text> */}
                   {/* <View style={{alignItems: 'center', marginVertical: 10}}>
                     <View style={styles.controlContainer}>  
@@ -137,6 +202,11 @@ export default function Slider(props) {
                   </View> */}
                   {/* <Text>rating: { item.rating }</Text> */}
                 </Card>
+
+                {/* <View style={{alignItems: 'center', justifyContent: 'center', width: '100%'}}> */}
+                <Snackbar visible={doneVisible} onDismiss={() => setDoneVisible(false)} action={{onPress: () => { setDoneVisible(false) }}} style={{backgroundColor: "green", width: '100%'}}
+                ><Text style={{textAlign: 'center'}}>{msg}</Text></Snackbar>
+                {/* </View> */}
             </Layout>
         // </TouchableOpacity>
     )
@@ -185,7 +255,7 @@ export default function Slider(props) {
                   </View>
                   <View style={{position: 'absolute', top: 10, right: 10, flexDirection: "row"}}>
                     <Button size="tiny" onPress={() => closeBid(el._id)} status="success" style={{width: 50, borderRadius: 25}}><Entypo name="check" size={20} color="black" /></Button>
-                    <Button size="tiny" onPress={() => rejectBid(el._id)} status="danger" style={{width: 50, borderRadius: 25}}><Entypo name="cross" size={20} color="black" /></Button>
+                    {/* <Button size="tiny" onPress={() => rejectBid(el._id)} status="danger" style={{width: 50, borderRadius: 25}}><Entypo name="cross" size={20} color="black" /></Button> */}
                   </View>
                 </Card>
               ))}

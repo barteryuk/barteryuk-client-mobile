@@ -57,13 +57,11 @@ function MyProduct(props) {
   if (loading) {
     return <Layout style={styles.containerSpinner}><Spinner/></Layout> 
   } else {
-    // console.log('MY PRODUUUUUCT', myProducts.ownItems)
-    // myProducts.ownItems.forEach(el => console.log(el.bidProductId.length))
     return (
       <>
       <Layout style={styles.container}>
         <View style={styles.containerone}>
-          <Text style={{fontSize: 28, fontWeight: 'bold', color: 'white'}}>My Products</Text>
+          <Text style={{fontSize: 26, fontWeight: 'bold', color: 'white'}}>My Products</Text>
         </View>
         <View style={styles.containertwo}>
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100}}>
@@ -106,10 +104,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containertwo: {
-    flex: 9,
+    flex: 7,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 200,
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35
   },

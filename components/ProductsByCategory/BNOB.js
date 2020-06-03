@@ -16,7 +16,7 @@ function BNOB(props) {
   useEffect(() => {
     let BNOBProd = []
     products.forEach(el => {
-      if (el.category === 'BNOB' && el.userId !== userId && el.status === 'open') {
+      if (el.category === 'BNOB' && el.userId !== userId && el.status === 'open' && el.topListingStatusDate === '') {
         BNOBProd.push(el)
       } 
     })

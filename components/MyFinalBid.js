@@ -10,17 +10,13 @@ import { StyleSheet, AsyncStorage } from "react-native";
 function MyFinalBid(props) {
   const { navigation, products, userId } = props;
   const [MyBidProd, setMyBidProd] = useState(null);
-  // const { loading, error, data } = useQuery(FETCH_MOVIES)
-  //   if (error) return <Layout style={styles.containerSpinner}><Text>Error ...</Text></Layout>
   const handleFromChild = (data) => {
     props.cb(data);
   };
 
-  
   useEffect(() => {
     let payload = []
     products.forEach(el => {
-      // console.log('ELLLLL', el)
       if (el.finalBidderId.length !== 0) {
         console.log('BIDDER FINAL ID =========', el.finalBidderId[0]._id)
         if (el.finalBidderId[0]._id === userId ) {
@@ -30,21 +26,8 @@ function MyFinalBid(props) {
     })
     setMyBidProd(payload)
   }, [])
-
-  // useEffect(() => {
-  //   fetchHooks();
   let MyNewBidProd = [];
-  
-  // console.log("ini products ===", products);
-  
-  // const acceptedBid = products.filter(
-  //   (el) => el.finalBidderId[0].userId === userId
-  // );
   console.log("ini dari components userId ============== ", userId);
-  // console.log("accepted bid is: ", acceptedBid);
-  // console.log("myNewBidProd is: ", MyNewBidProd);
-  // setMyBidProd(MyBidProd);
-  // }, []);
   return (
     <>
       <TagCategory category={"My Finished Transactions"} />

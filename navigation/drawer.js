@@ -9,7 +9,6 @@ import Transaction from '../views/Transaction'
 import UserProfile from '../views/UserProfile'
 import Detail from '../views/Detail'
 import MyProduct from '../views/MyProduct'
-import MyBid from '../views/MyBid'
 import Sidebar from '../components/Sidebar'
 import { Dimensions } from 'react-native';
 import { createAppContainer } from '@react-navigation/native';

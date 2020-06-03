@@ -13,18 +13,15 @@ const { width: screenWidth, height } = Dimensions.get('window')
 
 export default function Slider(props) {
   const { products, navigation, userId } = props
-  // const [visible, setVisible] = useState(false)
-  
-  // const [payload, setPayload] = useState(null)
   const [MyBidProd, setMyBidProd] = useState(null);
 
   useEffect(() => {
     let payload = []
     products.forEach(el => {
       if (el.finalBidderId.length !== 0) {
-        console.log('BIDDER FINAL ID ========= FROM CarouselBidCard', el.finalBidderId[0]._id)
-        console.log('BIDDER email ========= FROM CarouselBidCard', el.finalBidderId[0].email)
-        console.log('USER IDNYAA', userId)
+        // console.log('BIDDER FINAL ID ========= FROM CarouselBidCard', el.finalBidderId[0]._id)
+        // console.log('BIDDER email ========= FROM CarouselBidCard', el.finalBidderId[0].email)
+        // console.log('USER IDNYAA', userId)
         if (el.finalBidderId[0]._id === userId ) {
           payload.push(el)
           console.log('INI ELLLnya', el)
@@ -35,8 +32,6 @@ export default function Slider(props) {
     setMyBidProd(payload)
   }, [])
 
-  const backToParent = () => {
-  }
   // prodId > barang yg gua minat > hape asus
   // collateral > barang milik gua ? gelas
 
@@ -44,8 +39,8 @@ export default function Slider(props) {
   const showCarousel = () => {
     setShow(true)
   }
-  const giveRating = () => {
-    console.log('giveRating')
+  const giveRating = (item) => {
+    props.cb(item)
   }
   const renderItem = ({ item, index }, parallaxProps) => {
     return (
@@ -78,45 +73,6 @@ export default function Slider(props) {
           renderItem={renderItem}
           hasParallaxImages={true}
       />: <></>}
-
-      {/* <Modal visible={visible}
-          backdropStyle={styles.backdrop}
-          onBackdropPress={() => setVisible(false)}>
-            <Card 
-            disabled={true}
-            style={styles.cardWrapper}>
-              {empty ? <Text>Zero Bidder</Text> :  
-              payload.bidProductId.map((el, index) => (
-                <Card
-                key={index}
-                style={styles.card}
-                status='basic'
-                > 
-                  <View>
-                    <Image source={{ uri: el.photo }} style={{width: 125, height: 125}}></Image>
-                  </View>
-                  <View>
-                    <Text style={{fontWeight: 'bold', fontSize: 20, marginTop: 10}}>
-                      {el.title}
-                    </Text>
-                    <Text>
-                      {el.description}
-                    </Text>
-                    <Text>
-                      {el.value} IDR
-                    </Text>
-                    <Text>
-                      {el.status} 
-                    </Text>
-                  </View>
-                  <View style={{position: 'absolute', top: 10, right: 10, flexDirection: "row"}}>
-                    <Button size="tiny" onPress={() => closeBid(el._id)} status="success" style={{width: 50, borderRadius: 25}}><Entypo name="check" size={20} color="black" /></Button>
-                    <Button size="tiny" onPress={() => rejectBid(el._id)} status="danger" style={{width: 50, borderRadius: 25}}><Entypo name="cross" size={20} color="black" /></Button>
-                  </View>
-                </Card>
-              ))}
-              </Card>
-      </Modal> */}
     </Layout>
 
   </>
@@ -139,7 +95,8 @@ const styles = StyleSheet.create({
       height: screenWidth,
       marginVertical: 30,
       // backgroundColor: 'white',
-      borderRadius: 20
+      borderRadius: 20,
+      marginBottom: 50
   },
   card: {
     marginVertical: 5,

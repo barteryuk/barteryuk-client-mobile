@@ -9,15 +9,38 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
-import axios from "axios";
-import { Layout, Spinner } from "@ui-kitten/components";
+import { Layout, Spinner, Radio, RadioGroup, Modal, Card } from "@ui-kitten/components";
 import { Button, Text } from "@ui-kitten/components";
 import { FontAwesome5 } from "@expo/vector-icons";
 import MyBidProducts from "../components/MyFinalBid";
 import CarouselFinalBid from '../components/MyFinalBidCard'
 const { height, width } = Dimensions.get("window");
+
+const UPDATE_RATING = gql`
+mutation updateRating(
+  $FinalBidderId: String!
+  $FinalBidderRating: Int!
+  ){
+    updateRating(
+      FinalBidderId: $FinalBidderId
+      FinalBidderRating: $FinalBidderRating
+    ) {
+ 	  status
+  	message
+    user {
+      _id
+      email
+      password
+      hp
+      rating
+      quota
+      status
+    }
+  }
+}
+`
 
 function Transaction(props) {
   const FETCH_PRODUCTS = gql`
@@ -49,9 +72,11 @@ function Transaction(props) {
     }
   `;
   const { navigation } = props;
+  const [visible, setVisible] = useState(false)
   const [productDetail, setProductDetail] = useState(null);
   const [userId, setUserId] = useState("");
   const { loading, error, data, refetch } = useQuery(FETCH_PRODUCTS);
+  const [Update_rating] = useMutation(UPDATE_RATING)
   const fetchHooks = async () => {
     try {
       let value = await AsyncStorage.getItem("userLogin");
@@ -75,9 +100,27 @@ function Transaction(props) {
     });
   };
 
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [bidder, setBidder] = useState('')
+  const rate = () => {
+    let inputRate;
+    if (selectedIndex === 0) {
+      inputRate = 1
+    } else if (selectedIndex === 1) {
+      inputRate = 2
+    } else if (selectedIndex === 2) {
+      inputRate = 3
+    } else if (selectedIndex === 3) {
+      inputRate = 4
+    } else if (selectedIndex === 4) {
+      inputRate = 5
+    }
+    Update_rating({ variables: {FinalBidderId: bidder.userId, FinalBidderRating: inputRate }})
+    setVisible(false)
+  }
   const handleFromChild = (data) => {
-    // console.log("ini data dari transaction", data);
-    // setProductDetail(data);
+    setBidder(data)
+    setVisible(true)
   };
 
   if (loading) {
@@ -123,7 +166,7 @@ function Transaction(props) {
                 paddingBottom: 100,
               }}
             >
-              <CarouselFinalBid products={data.products} navigation={navigation} userId={userId}/>
+              <CarouselFinalBid products={data.products} navigation={navigation} userId={userId} cb={handleFromChild}/>
               {/* <ScrollView>
                 <MyBidProducts
                   navigation={props.navigation}
@@ -135,11 +178,41 @@ function Transaction(props) {
             </View>
           </View>
         </View>
+        <Layout style={styles.containerModal} level='1'>
+            <Modal visible={visible}
+            backdropStyle={styles.backdrop}
+            onBackdropPress={() => setVisible(false)}>
+              <Card disabled={true}>
+                <Text category='h5' style={{color: 'black', marginTop: 20 }}>
+                  Rate User
+                </Text>
+                <RadioGroup
+                  style={{flexDirection: 'row', marginBottom: 20}}
+                  selectedIndex={selectedIndex}
+                  onChange={index => setSelectedIndex(index)}>
+                  <Radio style={{color: 'white', marginHorizontal: 8}}>1</Radio>
+                  <Radio style={{color: 'white', marginHorizontal: 8}}>2</Radio>
+                  <Radio style={{color: 'white', marginHorizontal: 8}}>3</Radio>
+                  <Radio style={{color: 'white', marginHorizontal: 8}}>4</Radio>
+                  <Radio style={{color: 'white', marginHorizontal: 8}}>5</Radio>
+                </RadioGroup>
+                <Button onPress={() => rate()}>
+                  Submit
+                </Button>
+              </Card>
+            </Modal>
+          </Layout>
       </>
     );
   }
 }
 const styles = StyleSheet.create({
+  containerModal: {
+    minHeight: 192,
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   container: {
     flex: 1,
     backgroundColor: "#02C39A",
@@ -159,34 +232,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containertwo: {
-    flex: 9,
-    backgroundColor: "whitesmoke",
+    flex: 7,
+    backgroundColor: "white",
     // backgroundColor: '#DCDECE',
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
-  },
-  panel: {
-    paddingTop: 50,
-    paddingBottom: 150,
-    flex: 1,
-    // borderWidth: 2,
-    // backgroundColor: 'rgba(219, 219, 219, 1)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    backgroundColor: "#02C39A",
-    position: "relative",
-    height: 100,
-    shadowColor: "#555556",
-    shadowOffset: { width: 5, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 7,
   },
   containerSpinner: {
     marginTop: 10,
     height: 380,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "whitesmoke",
+    backgroundColor: "white",
   },
 });
 export default Transaction;

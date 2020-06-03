@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Text, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 import { Card, Button, ButtonGroup } from '@ui-kitten/components';
-import axios from 'axios';
 import { gql } from 'apollo-boost'
 import { useMutation } from '@apollo/react-hooks'
+import { Snackbar } from 'react-native-paper';
 const { width: screenWidth, height } = Dimensions.get('window')
 
 
@@ -47,14 +47,16 @@ export default function Slider(props) {
   const { data, wantedProduct, navigation, status } = props
   const [BidItem] = useMutation(BID_ITEM)
   const [SendMail] = useMutation(SEND_MAIL)
+  const [doneVisible, setDoneVisible] = useState(false)
 
   const chooseToBid = (own) => {
     console.log('wanted', wantedProduct._id)
     console.log('wanted data', wantedProduct)
     console.log('own', own._id)
     console.log('dataaaa', own)
-    BidItem({ variables: { itemId: wantedProduct._id, collateralId: own._id }})
-    SendMail({ variables: { id: wantedProduct.userId }})
+    // BidItem({ variables: { itemId: wantedProduct._id, collateralId: own._id }})
+    // SendMail({ variables: { id: wantedProduct.userId }})
+    setDoneVisible(true)
     console.log('successfully bid')
   }
 
@@ -95,7 +97,7 @@ export default function Slider(props) {
     )
   } 
   return (
-  <>
+  <>  
     <Carousel
         style={{ flex: 1, justifyContent: "center", alignItems: 'center', padding: 0, backgroundColor: 'black' }}
         sliderWidth={screenWidth - 40}
@@ -105,6 +107,10 @@ export default function Slider(props) {
         renderItem={renderItem}
         hasParallaxImages={true}
     />
+    <View style={{alignItems: 'center', justifyContent: 'center', width: '100%'}}>
+    <Snackbar visible={doneVisible} onDismiss={() => setDoneVisible(false)} action={{onPress: () => { setDoneVisible(false) }}} style={{backgroundColor: "green", width: '100%'}}
+    ><Text style={{textAlign: 'center'}}>Successfully Bid Product</Text></Snackbar>
+    </View>
   </>
   )
 }

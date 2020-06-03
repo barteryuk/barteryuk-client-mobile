@@ -14,6 +14,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import BNIBProducts from '../components/ProductsByCategory/BNIB'
 import BNOBProducts from '../components/ProductsByCategory/BNOB'
 import UsedProducts from '../components/ProductsByCategory/Used'
+import TopListProducts from '../components/ProductsByCategory/TopList'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 const { height, width } = Dimensions.get('window')
 
@@ -47,6 +48,7 @@ query {
       status 
     }
     finalBidderRating
+    topListingStatusDate
   }
 }
 `;
@@ -115,6 +117,7 @@ function AllProducts(props) {
 
   useEffect(() => {
     fetchHooks()
+    refetch()
     // refetchOwnItems()
   }, [])
 
@@ -138,6 +141,7 @@ function AllProducts(props) {
             <ScrollView>
               { loading ? <Layout style={styles.containerSpinner}><Spinner/></Layout> : 
               <>
+              <TopListProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>
               <BNIBProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>
               <BNOBProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>
               <UsedProducts navigation={props.navigation} products={data.products} userId={userId} cb={handleFromChild}/>

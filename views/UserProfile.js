@@ -12,6 +12,7 @@ import { Button, Modal, Card, Input } from "@ui-kitten/components";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
+import { Rating, AirbnbRating } from 'react-native-ratings';
 const FETCH_USER = gql`
   query user($email: String!) {
     user(email: $email) {
@@ -103,6 +104,7 @@ function Index(props) {
   if (loading) {
     return <Text>Loading</Text>;
   } else {
+    console.log('ratiiiiing', data.user.user.rating)
     return (
       <View
         style={{
@@ -123,21 +125,27 @@ function Index(props) {
             ry={445}
           ></Ellipse>
         </Svg>
-        <View style={{ marginTop: 50, marginBottom: 40 }}>
+        <View style={{ marginTop: 30, marginBottom: 10 }}>
           <Image
             style={styles.photoProfile}
             source={require("../assets/userProfile.png")}
           ></Image>
         </View>
+        <AirbnbRating
+          count={5}
+          reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+          defaultRating={data.user.user.rating}
+          size={20}
+        />
         <View
-          style={{ flexDirection: "row", alignItems: "center", width: "70%" }}
+          style={{ flexDirection: "row", alignItems: "center", width: "70%", marginTop: 20 }}
         >
           <MaterialIcons name="email" size={50} color="black" />
-          <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
+          <View style={{ marginLeft: 35 }}>
+            <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 0 }}>
               Email
             </Text>
-            <Text style={{ fontSize: 15 }}>{data.user.user.email}</Text>
+            <Text style={{ fontSize: 12 }}>{data.user.user.email}</Text>
           </View>
         </View>
         <View
@@ -149,11 +157,11 @@ function Index(props) {
           }}
         >
           <MaterialIcons name="local-phone" size={50} color="black" />
-          <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
+          <View style={{ marginLeft: 35 }}>
+            <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 0 }}>
               Phone Number
             </Text>
-            <Text style={{ fontSize: 15 }}>{data.user.user.hp}</Text>
+            <Text style={{ fontSize: 12 }}>{data.user.user.hp}</Text>
           </View>
         </View>
         <View
@@ -169,11 +177,11 @@ function Index(props) {
             size={50}
             color="black"
           />
-          <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 0 }}>
+          <View style={{ marginLeft: 35 }}>
+            <Text style={{ fontSize: 17, fontWeight: "bold", marginBottom: 0 }}>
               Quota
             </Text>
-            <Text style={{ fontSize: 15 }}>{data.user.user.quota}</Text>
+            <Text style={{ fontSize: 12 }}>{data.user.user.quota}</Text>
           </View>
         </View>
         <View
@@ -224,7 +232,7 @@ function Index(props) {
         </View>
         <View></View>
         <View
-          style={{ flex: 1, width: "90%", position: "absolute", bottom: 30 }}
+          style={{ width: "90%", marginTop: 60 }}
         >
           <Button style={{ borderRadius: 40 }} onPress={() => logout()}>
             LOGOUT

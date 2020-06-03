@@ -4,7 +4,7 @@ import { Button, Radio, RadioGroup } from '@ui-kitten/components';
 import * as ImagePicker from 'expo-image-picker'
 import { Hoshi } from 'react-native-textinput-effects';
 // import { useMutation } from '@apollo/react-hooks'
-// import { Snackbar } from 'react-native-paper';
+import { Snackbar } from 'react-native-paper';
 // import { Container, Header, Content, Text, Button, Toast } from "native-base";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -112,6 +112,7 @@ function PostProduct(props) {
   const [description, setDescription] = useState('')
   const [value, setValue] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [doneVisible, setDoneVisible] = useState(false)
   const [AddProduct] = useMutation(ADD_PRODUCT)
 
 
@@ -135,12 +136,13 @@ function PostProduct(props) {
       category = 'Used'
     }
     AddProduct({ variables: {title, description, value: parseFloat(value), photopath: fileObj, category}})
+    setDoneVisible(true)
     setTitle('')
     setDescription('')
     setValue('')
     setSelectedIndex(0)
     setFileObj("https://clipartart.com/images/image-placeholder-clipart-1.png")
-    navigation.navigate('My Product')
+    // navigation.navigate('My Product')
   }
   return (
     <View style={styles.container}>
@@ -168,6 +170,7 @@ function PostProduct(props) {
             />
             <Hoshi
                 onChangeText={text => setValue(text)}
+                keyboardType={"numeric"}
                 value={value}
                 label={'Value'}
                 inputPadding={14}
@@ -202,9 +205,9 @@ function PostProduct(props) {
             </Button> }
 
             {/* <Snackbar visible={errVisible} onDismiss={() => setErrVisible(false)} action={{onPress: () => { setErrVisible(false) }}} style={{backgroundColor: "red"}}
-            ><Text style={{textAlign: 'center'}}>Please fill all the blank form</Text></Snackbar>
+            ><Text style={{textAlign: 'center'}}>Please fill all the blank form</Text></Snackbar> */}
             <Snackbar visible={doneVisible} onDismiss={() => setDoneVisible(false)} action={{onPress: () => { setDoneVisible(false) }}} style={{backgroundColor: "green"}}
-            ><Text style={{textAlign: 'center'}}>Successfully Added</Text></Snackbar> */}
+            ><Text style={{textAlign: 'center'}}>Successfully Added new Product</Text></Snackbar>
         </View>
         </KeyboardAwareScrollView>
       </View> 

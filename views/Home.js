@@ -8,7 +8,7 @@ import axios from 'axios'
 import { Layout, Spinner } from '@ui-kitten/components';
 import { Button, Text } from '@ui-kitten/components';
 import Constants from 'expo-constants'
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { FontAwesome5 } from '@expo/vector-icons';
 import BNIBProducts from '../components/HomeComponents/BNIB'
 import BNOBProducts from '../components/HomeComponents/BNOB'
@@ -145,7 +145,9 @@ function Home(props) {
       <>
       <View style={styles.container}>
         <View style={styles.containerone}>
-          <ImageBackground source={require("../assets/logo.png")} style={styles.imgBackgroundHome}></ImageBackground>
+          <TouchableOpacity onPress={() => navigation.navigate('auth')}>
+            <ImageBackground source={require("../assets/logo.png")} style={styles.imgBackgroundHome}></ImageBackground>
+          </TouchableOpacity>
           {/* <Text style={{fontSize: 30, fontWeight: 'bold'}}>BarterYuk</Text> */}
        </View>
         <View style={styles.containertwo}>

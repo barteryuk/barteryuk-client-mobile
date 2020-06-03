@@ -14,9 +14,6 @@ export default function Sliding(props) {
 
   return (
   <>
-    {/* <Animated.View style={[styles.favoriteIcon]}>
-      <Text style={{ textAlign: 'center', fontSize: 20, color: 'white' }}>Drag Me!</Text>
-    </Animated.View> */}
     <View style={{justifyContent: 'center', alignItems: 'center'}}>
       <Text style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>{data.title}</Text>
       <View style={{ paddingHorizontal: 30, marginTop: 20, width: '98%' }}>
